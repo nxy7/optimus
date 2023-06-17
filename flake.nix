@@ -25,7 +25,7 @@
 
           meta = with pkgs.lib; {
             description = "Simple command-line snippet manager, written in Go";
-            homepage = "https://github.com/knqyf263/pet";
+            homepage = "https://github.com/nxy7/optimus";
             license = licenses.mit;
             maintainers = with maintainers; [ nxyt ];
           };
