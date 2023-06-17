@@ -9,6 +9,7 @@ import (
 )
 
 func main() {
-	println(utils.ProjectRoot())
+	start(utils.ProjectRoot())
+
 	cmd.Execute()
 }

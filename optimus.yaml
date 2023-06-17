@@ -1,0 +1,27 @@
+start: |
+  kubectl apply -f k3s/01_namespace.yaml;
+  kubectl apply -k .;
+  kubectl apply -f k3s/;
+  kubectl config set-context --current --namespace=streampai;
+  echo "context set to streampai";
+  telepresence helm install;
+  telepresence connect;
+  cp .env.example .env;
+
+e2e_tests: |
+  ${startup}
+
+services:
+  frontend:
+    start:
+    dev:
+    test:
+      depends_on:
+      - backend/main
+      - backend/stream_chat
+
+  backend/main:
+  backend/stream_chat:
+
+cleanup: |
+
