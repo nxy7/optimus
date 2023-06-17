@@ -14,7 +14,8 @@
           config.allowUnfree = true;
         };
       in {
-        devShell = pkgs.mkShell { packages = with pkgs; [ go cobra-cli ]; };
+        devShell =
+          pkgs.mkShell { packages = with pkgs; [ go gopls cobra-cli ]; };
         defaultPackage = pkgs.buildGoModule rec {
           pname = "optimus";
           version = "0.0.1";
@@ -22,6 +23,7 @@
           src = ./.;
 
           vendorHash = "sha256-JFvC9V0xS8SZSdLsOtpyTrFzXjYAOaPQaJHdcnJzK3s=";
+          # vendorHash = pkgs.lib.fakeHash;
 
           meta = with pkgs.lib; {
             description = "Simple command-line snippet manager, written in Go";
