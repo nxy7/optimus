@@ -15,6 +15,20 @@
         };
       in {
         devShell = pkgs.mkShell { packages = with pkgs; [ go cobra-cli ]; };
-        # package = pkgs.buildGoModule {};
+        defaultPackage = pkgs.buildGoModule rec {
+          pname = "optimus";
+          version = "0.0.1";
+
+          src = ./.;
+
+          vendorHash = "sha256-JFvC9V0xS8SZSdLsOtpyTrFzXjYAOaPQaJHdcnJzK3s=";
+
+          meta = with pkgs.lib; {
+            description = "Simple command-line snippet manager, written in Go";
+            homepage = "https://github.com/knqyf263/pet";
+            license = licenses.mit;
+            maintainers = with maintainers; [ nxyt ];
+          };
+        };
       });
 }
