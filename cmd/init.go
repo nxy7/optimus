@@ -15,13 +15,8 @@ import (
 // initCmd represents the init command
 var initCmd = &cobra.Command{
 	Use:   "init",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "Initialize project environment",
+	Long:  `Initialize project environment. This commands runs 'init' script found in 'optimus' config file until completion.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		dirPath := utils.ProjectRoot()
 		viper.SetConfigType("yaml")
@@ -35,9 +30,11 @@ to quickly create a Cobra application.`,
 		init := viper.GetString("init")
 		c := exec.Command("bash", "-c", init)
 		c.Stdout = os.Stdout
+		c.Stderr = os.Stderr
 		err = c.Run()
 		if err != nil {
-			println(err)
+			// println("command failed: ", err)
+			println(err.Error())
 		}
 
 		// initByLine := strings.Split(init, "\n")

@@ -9,7 +9,7 @@ func Start(dirPath string) {
 
 	err := viper.ReadInConfig()
 	if err != nil {
-		println(err)
+		println("command failed: ", err)
 	}
 	z := viper.GetString("start")
 	println(z)

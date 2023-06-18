@@ -7,9 +7,13 @@ init: |
   y=3
   z=x+y
   echo z
+  false
+  echo $?
+  false
 
 e2e_tests: |
   ${startup}
+  ./e2e pnpm test
   ${cleanup}
 
 services:
