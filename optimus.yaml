@@ -2,23 +2,22 @@ global:
   shell_cmd: bash -c
 
 init: |
-  echo test
-  x=2
-  y=3
-  z=x+y
-  echo z
-  false
-  echo $?
-  false
+  echo "initialization commands"
 
 e2e_tests: |
-  ${startup}
+  ${build all}
+  ${push all}
+  ${init}
   ./e2e pnpm test
-  ${cleanup}
+  ${purge}
 
 services:
   frontend:
     start:
+    build: |
+      docker build . -t streampai.frontend:latest
+    push: |
+      docker push streampai.frontend:latest
     dev:
     test:
       depends_on:
@@ -29,4 +28,9 @@ services:
   backend/stream_chat:
 
 purge: |
+  echo "project cleanup commands
+  for example:
+  - docker compose down
+  or
+  - kubectl delete -f k3s/"
 

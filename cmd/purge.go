@@ -1,13 +1,15 @@
 /*
 Copyright © 2023 NAME HERE <EMAIL ADDRESS>
-
 */
 package cmd
 
 import (
-	"fmt"
+	"optimus/utils"
+	"os"
+	"os/exec"
 
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 // purgeCmd represents the purge command
@@ -21,7 +23,30 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("purge called")
+		dirPath := utils.ProjectRoot()
+		viper.SetConfigType("yaml")
+		viper.SetConfigName("optimus")
+		viper.AddConfigPath(dirPath)
+
+		err := viper.ReadInConfig()
+		if err != nil {
+			println(err)
+		}
+		init := viper.GetString("purge")
+		c := exec.Command("bash", "-c", init)
+		c.Stdout = os.Stdout
+		c.Stderr = os.Stderr
+		err = c.Run()
+		if err != nil {
+			// println("command failed: ", err)
+			println(err.Error())
+		}
+
+		// initByLine := strings.Split(init, "\n")
+		// for _, line := range initByLine {
+		// 	println(line)
+		// }
+
 	},
 }
 
