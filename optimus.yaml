@@ -1,6 +1,10 @@
 global:
   shell_cmd: bash -c
 
+include:
+  - ./frontend
+  - ./backend
+
 init: |
   echo "initialization commands"
 

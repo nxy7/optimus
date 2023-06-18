@@ -1,4 +1,10 @@
-package main
+package config
+
+import (
+	"optimus/utils"
+
+	"github.com/spf13/viper"
+)
 
 type Config struct {
 	global             Global
@@ -43,4 +49,21 @@ type Cmd struct {
 type ServiceTestCmd struct {
 	cmd       Cmd
 	dependsOn []Service
+}
+
+func LoadConfig() Config {
+	dirPath := utils.ProjectRoot()
+	viper.SetConfigType("yaml")
+	viper.SetConfigName("optimus")
+	viper.AddConfigPath(dirPath)
+
+	viper.SetDefault("global", map[string]string{"shell_cmd": "bash -c"})
+
+	var c Config
+	err := viper.Unmarshal(&c)
+	if err != nil {
+		panic("Could not marchal config")
+	}
+
+	return Config{}
 }

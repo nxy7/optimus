@@ -1,6 +1,5 @@
 /*
 Copyright © 2023 NAME HERE <EMAIL ADDRESS>
-
 */
 package cmd
 
@@ -13,7 +12,7 @@ import (
 // devCmd represents the dev command
 var devCmd = &cobra.Command{
 	Use:   "dev",
-	Short: "A brief description of your command",
+	Short: "Start development of specific service",
 	Long: `A longer description that spans multiple lines and likely contains examples
 and usage of using your command. For example:
 
@@ -27,7 +26,6 @@ to quickly create a Cobra application.`,
 
 func init() {
 	rootCmd.AddCommand(devCmd)
-
 	// Here you will define your flags and configuration settings.
 
 	// Cobra supports Persistent Flags which will work for this command
