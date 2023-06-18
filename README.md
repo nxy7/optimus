@@ -1,4 +1,4 @@
-[Optimus Prime](https://www.dexerto.com/cdn-cgi/image/width=3840,quality=75,format=auto/https://editors.dexerto.com/wp-content/uploads/2023/04/21/Transformers-1.jpg)
+![Optimus Prime](https://www.dexerto.com/cdn-cgi/image/width=3840,quality=75,format=auto/https://editors.dexerto.com/wp-content/uploads/2023/04/21/Transformers-1.jpg)
 
 Optimus is a powerful Golang package designed to simplify the management of monorepos containing multiple microservices. Inspired by the Optimus Prime, it provides a guiding framework to empower individual microservices, enabling them to work together seamlessly.
 
