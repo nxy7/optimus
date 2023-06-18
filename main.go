@@ -5,11 +5,12 @@ package main
 
 import (
 	"optimus/cmd"
+	"optimus/start"
 	"optimus/utils"
 )
 
 func main() {
-	start(utils.ProjectRoot())
+	start.Start(utils.ProjectRoot())
 
 	cmd.Execute()
 }

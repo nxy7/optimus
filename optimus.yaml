@@ -1,12 +1,10 @@
 start: |
-  kubectl apply -f k3s/01_namespace.yaml;
-  kubectl apply -k .;
-  kubectl apply -f k3s/;
-  kubectl config set-context --current --namespace=streampai;
-  echo "context set to streampai";
-  telepresence helm install;
-  telepresence connect;
-  cp .env.example .env;
+  echo test
+  x=2
+  y=3
+  z=x+y
+  echo z
+  export testVar=testVal
 
 e2e_tests: |
   ${startup}
