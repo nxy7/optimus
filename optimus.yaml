@@ -1,16 +1,16 @@
-config:
-  shell: bash
+global:
+  shell_cmd: bash -c
 
-start: |
+init: |
   echo test
   x=2
   y=3
   z=x+y
   echo z
-  export testVar=testVal
 
 e2e_tests: |
   ${startup}
+  ${cleanup}
 
 services:
   frontend:
@@ -24,5 +24,5 @@ services:
   backend/main:
   backend/stream_chat:
 
-cleanup: |
+purge: |
 
