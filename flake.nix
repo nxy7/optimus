@@ -22,8 +22,8 @@
 
           src = ./.;
 
-          # vendorHash = "sha256-3tO/+Mnvl/wpS7Ro3XDIVrlYTGVM680mcC15/7ON6qM=";
-          vendorHash = pkgs.lib.fakeHash;
+          vendorHash = "sha256-3tO/+Mnvl/wpS7Ro3XDIVrlYTGVM680mcC15/7ON6qM=";
+          # vendorHash = pkgs.lib.fakeHash;
 
           meta = with pkgs.lib; {
             description = "Simple command-line snippet manager, written in Go";

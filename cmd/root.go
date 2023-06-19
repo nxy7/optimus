@@ -12,7 +12,6 @@ import (
 
 var AppConfig config.Config
 
-// rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "optimus",
 	Short: "Opinionated monorepo management framework",
@@ -23,6 +22,7 @@ var rootCmd = &cobra.Command{
 // This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
 
+	AppConfig = config.LoadConfig()
 	err := rootCmd.Execute()
 	if err != nil {
 		os.Exit(1)

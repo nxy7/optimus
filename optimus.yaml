@@ -28,8 +28,12 @@ services:
       - backend/main
       - backend/stream_chat
 
-  backend/main:
-  backend/stream_chat:
+  # backend/main:
+  #   build: |
+  #     docker build . -t streampai.frontend:latest
+  #   push: |
+  #     docker push streampai.frontend:latest
+  # backend/stream_chat:
 
 purge: |
   echo "project cleanup commands

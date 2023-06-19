@@ -1,54 +1,56 @@
 package config
 
 import (
+	"fmt"
 	"optimus/utils"
 
 	"github.com/spf13/viper"
 )
 
 type Config struct {
-	global             Global
-	init               Init
-	e2e_tests          E2eTests
-	purge              Cmd
-	services           []Service
-	additionalCommands []Cmd
+	Global Global `mapstructure:"global"`
+	// Include            []string `mapstructure:"include"`
+	// Init               any
+	// E2eTests           any
+	// Purge              Cmd
+	Services map[string]any
+	// AdditionalCommands []Cmd
 }
 
 type Global struct {
-	shell_cmd string
+	ShellCmd string `mapstructure:"shell_cmd"`
 }
 
 type Init struct {
-	cmd  string
-	file string
+	Cmd  string
+	File string
 }
 
 type E2eTests struct {
-	cmd string
+	Cmd string
 }
 
 type Services struct {
 }
 
 type Service struct {
-	name    string
-	start   Cmd
-	dev     Cmd
-	postDev Cmd
-	test    ServiceTestCmd
-	dirHash string
+	Name    string
+	Start   Cmd
+	Dev     Cmd
+	PostDev Cmd
+	Test    ServiceTestCmd
+	DirHash string
 }
 
 type Cmd struct {
-	cmd   string
-	file  string
-	shell string
+	Cmd   string
+	File  string
+	Shell string
 }
 
 type ServiceTestCmd struct {
-	cmd       Cmd
-	dependsOn []Service
+	Cmd       Cmd
+	DependsOn []Service
 }
 
 func LoadConfig() Config {
@@ -57,13 +59,18 @@ func LoadConfig() Config {
 	viper.SetConfigName("optimus")
 	viper.AddConfigPath(dirPath)
 
-	viper.SetDefault("global", map[string]string{"shell_cmd": "bash -c"})
+	// viper.SetDefault("global", map[string]string{"shell_cmd": "bash -c"})
+	err := viper.ReadInConfig()
+	if err != nil {
+		panic("Could not read config")
+	}
 
 	var c Config
-	err := viper.Unmarshal(&c)
+	err = viper.Unmarshal(&c)
 	if err != nil {
+		fmt.Println(err)
 		panic("Could not marchal config")
 	}
 
-	return Config{}
+	return c
 }
