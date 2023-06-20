@@ -3,30 +3,50 @@ global:
 
 include:
   - ./frontend
-  - ./backend
+  - ./backend 
 
+# script that initializes your dev environment
 init: |
-  echo "initialization commands"
+  docker compose -f compose.yml -f compose.dev.yml up -d
 
-e2e_tests: |
-  ${build all}
-  ${push all}
-  ${init}
-  ./e2e pnpm test
-  ${purge}
+# script that runs e2e tests
+e2e_tests: 
+  cmd: nu -c
+  file: ./e2e_tests.nu
 
 services:
   frontend:
-    start:
-    build: |
-      docker build . -t streampai.frontend:latest
-    push: |
-      docker push streampai.frontend:latest
+    root: ./frontend
     dev:
-    test:
-      depends_on:
-      - backend/main
-      - backend/stream_chat
+      cmd: nu -c
+      run: |
+        pnpm i
+        pnpm dev
+    
+  backend:
+    root: ./backend
+    dev:
+      cmd: zsh -c
+      file: ./start_dev.sh
+
+  
+
+    
+  # dev: |
+  #   sleep 5
+  #   echo "20"
+  #   docker ps
+  # frontend:
+  #   start:
+  #   build: |
+  #     docker build . -t streampai.frontend:latest
+  #   push: |
+  #     docker push streampai.frontend:latest
+  #   dev:
+  #   test:
+  #     depends_on:
+  #     - backend/main
+  #     - backend/stream_chat
 
   # backend/main:
   #   build: |
@@ -42,3 +62,10 @@ purge: |
   or
   - kubectl delete -f k3s/"
 
+# project wide commands accessible via `optimus {command}`, in this example `optimus dbmigrate`
+cmds:
+  dbmigrate: |
+    echo "Migrating database"
+  tp-connect: |
+    telepresence helm install
+    telepresence connect

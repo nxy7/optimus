@@ -11,10 +11,13 @@ By automating mundane tasks and orchestrating interactions between microservices
 - Simplified monorepo management.
 - Doesn't use obscure languages for configuration.
 - Extensible using any shell that's available on the system.
+- Discoverable: allows newcomers to easily find out all parts of the system they can interact with.
 - Smart testing makes CI pipelines faster.
+- Integrates with other tools like telepresence.
 - Rigid and opinionated project structure that makes navigating multiple projects easier.
 - Empowers teams to collaborate effortlessly across different microservices.
 - Works with Docker Compose, Kubernetes and standalone apps.
+- Composable: configuration can be split into many files
 
 # Why use shell to extend Optimus capabilities
 
