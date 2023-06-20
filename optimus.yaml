@@ -2,8 +2,7 @@ global:
   shell_cmd: bash -c
 
 include:
-  - ./frontend
-  - ./backend 
+  - ./config
 
 # script that initializes your dev environment
 init: |
@@ -23,37 +22,6 @@ services:
         pnpm i
         pnpm dev
     
-  backend:
-    root: ./backend
-    dev:
-      cmd: zsh -c
-      file: ./start_dev.sh
-
-  
-
-    
-  # dev: |
-  #   sleep 5
-  #   echo "20"
-  #   docker ps
-  # frontend:
-  #   start:
-  #   build: |
-  #     docker build . -t streampai.frontend:latest
-  #   push: |
-  #     docker push streampai.frontend:latest
-  #   dev:
-  #   test:
-  #     depends_on:
-  #     - backend/main
-  #     - backend/stream_chat
-
-  # backend/main:
-  #   build: |
-  #     docker build . -t streampai.frontend:latest
-  #   push: |
-  #     docker push streampai.frontend:latest
-  # backend/stream_chat:
 
 purge: |
   echo "project cleanup commands

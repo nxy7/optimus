@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	"log"
 	"optimus/utils"
 	"strings"
 
@@ -10,37 +11,36 @@ import (
 
 // If config field has few shapes (like string or some struct) we're using any to parse it into said struct later on
 type rawConfig struct {
-	global    any
-	include   []string
-	init      any
-	e2e_tests any
-	services  map[string]any
-	purge     any
-	cmds      []any
+	Global    any            `mapstructure:"global"`
+	Include   []string       `mapstructure:"include"`
+	Init      any            `mapstructure:"init"`
+	E2e_Tests any            `mapstructure:"e2e_tests"`
+	Services  map[string]any `mapstructure:"services"`
+	Purge     any            `mapstructure:"purge"`
+	Cmds      []any          `mapstructure:"cmds"`
 }
 
 func LoadRawConfig() rawConfig {
 	dirPath := utils.ProjectRoot()
-	fmt.Println(dirPath)
 	c := loadConfigFromPath(dirPath)
 
 	return c
 }
 
 func loadConfigFromPath(p string) rawConfig {
-	viper.SetConfigType("yaml")
-	// viper.SetConfigType("json")
-	viper.SetConfigName("optimus")
-	viper.AddConfigPath(p)
+	v := viper.New()
+	v.SetConfigType("yaml")
+	v.SetConfigName("optimus")
+	v.AddConfigPath(p)
 
-	// viper.SetDefault("global", map[string]string{"shell_cmd": "bash -c"})
-	err := viper.ReadInConfig()
+	// v.SetDefault("global", map[string]string{"shell_cmd": "bash -c"})
+	err := v.ReadInConfig()
 	if err != nil {
-		panic("Could not read config")
+		log.Fatalf("Could not read config at path: %v\n%v", p, err)
 	}
 
 	var c rawConfig
-	err = viper.Unmarshal(&c)
+	err = v.Unmarshal(&c)
 	if err != nil {
 		fmt.Println(err)
 		panic("Could not marchal config")
@@ -52,7 +52,7 @@ func loadConfigFromPath(p string) rawConfig {
 }
 
 func (rc *rawConfig) loadIncludes(dirPath string) {
-	for _, v := range rc.include {
+	for _, v := range rc.Include {
 		newPath := strings.Replace(v, "./", "/", 1)
 		loadedConfig := loadConfigFromPath(dirPath + newPath)
 		new := mergeRawConfigs(*rc, loadedConfig)
@@ -61,25 +61,25 @@ func (rc *rawConfig) loadIncludes(dirPath string) {
 }
 
 func mergeRawConfigs(c1 rawConfig, c2 rawConfig) rawConfig {
-	if c1.global != nil && c2.global != nil {
+	if c1.Global != nil && c2.Global != nil {
 		panic("Global field specified multiple times")
 	}
 
-	if c1.init != nil && c2.init != nil {
+	if c1.Init != nil && c2.Init != nil {
 		panic("Init field specified multiple times")
 	}
 
-	if c1.init != nil && c2.init != nil {
+	if c1.Init != nil && c2.Init != nil {
 		panic("Init field specified multiple times")
 	}
 
 	return rawConfig{
-		global:    c1.global,
-		include:   []string{},
-		init:      nil,
-		e2e_tests: nil,
-		services:  map[string]any{},
-		purge:     nil,
-		cmds:      []any{},
+		Global:    c1.Global,
+		Include:   []string{},
+		Init:      nil,
+		E2e_Tests: nil,
+		Services:  map[string]any{},
+		Purge:     nil,
+		Cmds:      []any{},
 	}
 }

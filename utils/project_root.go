@@ -1,7 +1,6 @@
 package utils
 
 import (
-	"fmt"
 	"io/ioutil"
 	"os"
 	"strings"
@@ -12,16 +11,27 @@ func ProjectRoot() string {
 	separator := string(os.PathSeparator)
 
 	paths := strings.Split(p, separator)
-	for i := len(paths); i > 1; i-- {
-		searchPath := paths[0:i]
 
-		files, err := ioutil.ReadDir(separator + strings.Join(searchPath, separator))
-		if err != nil {
-			panic(err)
+	p = (func() string {
+		for i := len(paths); i > 1; i-- {
+			searchPath := paths[0:i]
+			searchPathStr := strings.Join(searchPath, separator)
+
+			files, err := ioutil.ReadDir(searchPathStr)
+			if err != nil {
+				panic(err)
+			}
+
+			for _, fi := range files {
+				if fi.IsDir() && fi.Name() == ".git" {
+					return searchPathStr
+				}
+			}
 		}
-
-		fmt.Println(searchPath)
-		fmt.Println(files)
+		return ""
+	})()
+	if p == "" {
+		panic("no path found")
 	}
 
 	return p

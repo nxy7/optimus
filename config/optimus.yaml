@@ -1,0 +1,7 @@
+services:
+  backend:
+    root: ./backend
+    dev:
+      cmd: zsh -c
+      file: ./start_dev.sh
+  
