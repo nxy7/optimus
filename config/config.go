@@ -1,13 +1,12 @@
 package config
 
 type Config struct {
-	Global Global
-	// Include            []string
-	Init               Cmd
+	Global             Global
+	BuildCmd           Cmd
+	PushCmd            Cmd
 	E2eTests           Cmd
-	Purge              Cmd
-	Services           map[string]any
-	AdditionalCommands []Cmd
+	Services           map[string]Service
+	AdditionalCommands map[string]Cmd
 }
 
 type E2eTests struct {
@@ -29,13 +28,18 @@ func LoadConfig() Config {
 
 func DefaultConfig() Config {
 	return Config{
-		Global: Global{
-			ShellCmd: "bash -c",
+		Global:   Global{ShellCmd: "bash -c"},
+		BuildCmd: Cmd{},
+		PushCmd:  Cmd{},
+		E2eTests: Cmd{},
+		Services: map[string]Service{
+			"test": Service{},
 		},
-		Init:               Cmd{},
-		E2eTests:           Cmd{},
-		Purge:              Cmd{},
-		Services:           map[string]any{},
-		AdditionalCommands: []Cmd{},
+		AdditionalCommands: map[string]Cmd{
+			"testcmd": Cmd{
+				Description: "Gówno",
+				Run:         "echo 2",
+			},
+		},
 	}
 }

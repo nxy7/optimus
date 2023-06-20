@@ -5,7 +5,6 @@ package cmd
 
 import (
 	"fmt"
-	"optimus/config"
 
 	"github.com/spf13/cobra"
 )
@@ -23,15 +22,7 @@ func init() {
 			Use:   n,
 			Short: "Start development for " + n,
 			Run: func(cmd *cobra.Command, args []string) {
-				switch t.(type) {
-				case string:
-					println("it's string")
-					fmt.Println(t)
-				case config.Cmd:
-					println("it's cmd")
-					fmt.Println(t)
-
-				}
+				fmt.Printf("%+v", t)
 				// svc := t.(map[string]any)
 				// shellScript := svc["dev"].(string)
 				// fmt.Println(shellScript)

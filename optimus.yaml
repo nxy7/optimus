@@ -5,35 +5,25 @@ include:
   - ./config
 
 # script that initializes your dev environment
-init: |
-  docker compose -f compose.yml -f compose.dev.yml up -d
+init: 
+  description: |
+    Start the application
+  run: |
+    docker compose -f compose.yml -f compose.dev.yml up -d  
+  
 
 # script that runs e2e tests
 e2e_tests: 
-  cmd: nu -c
-  file: ./e2e_tests.nu
+  shell: nu -c
+  run: |
+    echo "test"
+    echo "multiline"
+  # file: ./e2e_tests.nu
 
 services:
   frontend:
     root: ./frontend
     dev:
-      cmd: nu -c
+      shell: nu -c
       run: |
-        pnpm i
-        pnpm dev
-    
-
-purge: |
-  echo "project cleanup commands
-  for example:
-  - docker compose down
-  or
-  - kubectl delete -f k3s/"
-
-# project wide commands accessible via `optimus {command}`, in this example `optimus dbmigrate`
-cmds:
-  dbmigrate: |
-    echo "Migrating database"
-  tp-connect: |
-    telepresence helm install
-    telepresence connect
+        pnpm i; pnpm dev;

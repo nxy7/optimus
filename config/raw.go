@@ -11,19 +11,18 @@ import (
 
 // If config field has few shapes (like string or some struct) we're using any to parse it into said struct later on
 type RawConfig struct {
-	Global    any            `mapstructure:"global"`
-	Include   []string       `mapstructure:"include"`
-	Init      any            `mapstructure:"init"`
-	E2e_Tests any            `mapstructure:"e2e_tests"`
-	Services  map[string]any `mapstructure:"services"`
-	Purge     any            `mapstructure:"purge"`
-	Cmds      map[string]any `mapstructure:"cmds"`
+	Global    any
+	Include   []string
+	Init      any
+	E2e_Tests any
+	Services  map[string]any
+	Purge     any
+	Cmds      map[string]any
 }
 
 func LoadRawConfig() RawConfig {
 	dirPath := utils.ProjectRoot()
 	c := loadConfigFromPath(dirPath)
-
 	return c
 }
 
@@ -39,16 +38,24 @@ func loadConfigFromPath(p string) RawConfig {
 		log.Fatalf("Could not read config at path: %v\n%v", p, err)
 	}
 
-	var c RawConfig
+	var c map[string]any
 	err = v.Unmarshal(&c)
 	if err != nil {
-		fmt.Println(err)
-		panic("Could not marchal config")
+		panic(err)
+	}
+	fmt.Printf("c: %v\n", c)
+
+	z, o := c["init"].(string)
+	if o {
+		fmt.Printf("Is string %v", z)
 	}
 
-	c.loadIncludes(p)
+	ee := ParseCmd(c["e2e_tests"])
+	fmt.Printf("Command %+v", ee)
 
-	return c
+	// c.loadIncludes(p)
+
+	return RawConfig{}
 }
 
 func (rc *RawConfig) loadIncludes(dirPath string) {
