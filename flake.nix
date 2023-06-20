@@ -20,13 +20,16 @@
           pname = "optimus";
           version = "0.0.1";
 
+          # we're looking for .git folder during tests, so they will fail in nix environment
+          doCheck = false;
+
           src = ./.;
 
           vendorHash = "sha256-3tO/+Mnvl/wpS7Ro3XDIVrlYTGVM680mcC15/7ON6qM=";
           # vendorHash = pkgs.lib.fakeHash;
 
           meta = with pkgs.lib; {
-            description = "Simple command-line snippet manager, written in Go";
+            description = "CLI management tool";
             homepage = "https://github.com/nxy7/optimus";
             license = licenses.mit;
             maintainers = with maintainers; [ nxyt ];

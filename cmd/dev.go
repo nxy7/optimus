@@ -18,7 +18,6 @@ var devCmd = &cobra.Command{
 }
 
 func init() {
-	AppConfig = config.LoadConfig()
 	for n, t := range AppConfig.Services {
 		devCmd.AddCommand(&cobra.Command{
 			Use:   n,

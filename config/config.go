@@ -1,10 +1,10 @@
 package config
 
 type Config struct {
-	Global             Global
-	Include            []string
-	Init               any
-	E2eTests           any
+	Global Global
+	// Include            []string
+	Init               Cmd
+	E2eTests           Cmd
 	Purge              Cmd
 	Services           map[string]any
 	AdditionalCommands []Cmd
@@ -15,9 +15,27 @@ type E2eTests struct {
 }
 
 func LoadConfig() Config {
-	_ = LoadRawConfig()
+	var conf = DefaultConfig()
+	// raw := LoadRawConfig()
+	// if raw.Global.(map[string]any) {
+	// 	conf.Global = ParseGlobal(raw.Global)
+	// }
+	// init := ParseCmd(raw.Init)
+	// global := raw.
 	// parse raw config
 
-	var conf = Config{}
 	return conf
+}
+
+func DefaultConfig() Config {
+	return Config{
+		Global: Global{
+			ShellCmd: "bash -c",
+		},
+		Init:               Cmd{},
+		E2eTests:           Cmd{},
+		Purge:              Cmd{},
+		Services:           map[string]any{},
+		AdditionalCommands: []Cmd{},
+	}
 }

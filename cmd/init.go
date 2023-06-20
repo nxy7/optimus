@@ -1,47 +1,27 @@
 /*
 Copyright © 2023 NAME HERE <EMAIL ADDRESS>
+
 */
 package cmd
 
 import (
-	"optimus/utils"
-	"os"
-	"os/exec"
+	"fmt"
 
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 // initCmd represents the init command
 var initCmd = &cobra.Command{
 	Use:   "init",
-	Short: "Initialize project environment",
-	Long:  `Initialize project environment. This commands runs 'init' script found in 'optimus' config file until completion.`,
+	Short: "A brief description of your command",
+	Long: `A longer description that spans multiple lines and likely contains examples
+and usage of using your command. For example:
+
+Cobra is a CLI library for Go that empowers applications.
+This application is a tool to generate the needed files
+to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		dirPath := utils.ProjectRoot()
-		viper.SetConfigType("yaml")
-		viper.SetConfigName("optimus")
-		viper.AddConfigPath(dirPath)
-
-		err := viper.ReadInConfig()
-		if err != nil {
-			println(err)
-		}
-		init := viper.GetString("init")
-		c := exec.Command("bash", "-c", init)
-		c.Stdout = os.Stdout
-		c.Stderr = os.Stderr
-		err = c.Run()
-		if err != nil {
-			// println("command failed: ", err)
-			println(err.Error())
-		}
-
-		// initByLine := strings.Split(init, "\n")
-		// for _, line := range initByLine {
-		// 	println(line)
-		// }
-
+		fmt.Println("init called")
 	},
 }
 

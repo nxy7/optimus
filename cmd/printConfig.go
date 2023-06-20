@@ -5,21 +5,15 @@ package cmd
 
 import (
 	"fmt"
-	"optimus/config"
 
 	"github.com/spf13/cobra"
 )
 
 // printConfigCmd represents the printConfig command
 var printConfigCmd = &cobra.Command{
-	Use:   "printConfig",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Use:     "print-config",
+	Aliases: []string{"pc"},
+	Short:   "Print merged Optimus Configuration",
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("Printing config")
 		fmt.Printf("AppConfig: %+v\n", AppConfig)
@@ -27,7 +21,6 @@ to quickly create a Cobra application.`,
 }
 
 func init() {
-	AppConfig = config.LoadConfig()
 	rootCmd.AddCommand(printConfigCmd)
 
 	// Here you will define your flags and configuration settings.

@@ -1,5 +1,5 @@
-global:
-  shell_cmd: bash -c
+# global:
+#   shell_cmd: bash -c
 
 include:
   - ./config
