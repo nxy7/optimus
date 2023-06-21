@@ -1,10 +1,6 @@
 ![Optimus Prime](https://www.dexerto.com/cdn-cgi/image/width=3840,quality=75,format=auto/https://editors.dexerto.com/wp-content/uploads/2023/04/21/Transformers-1.jpg)
 
-Optimus is a powerful CLI tool designed to simplify the management of monorepos containing multiple microservices and provides a guiding framework to empower individual microservices, enabling them to work together seamlessly.
-
-With Optimus, you can effortlessly navigate the complexities of monorepo development. It offers a comprehensive suite of tools and utilities to handle dependencies, streamline code sharing, and facilitate efficient development, testing, and deployment processes.
-
-By automating mundane tasks and orchestrating interactions between microservices, Optimus brings order and efficiency to your monorepo. Just as Optimus Prime led the Autobots to synchronize their efforts for the greater good, Optimus empowers development teams to collaborate effortlessly and deliver exceptional software products.
+Monorepo management tool that's extensible and will fit any workflow.
 
 # Key Features:
 
@@ -14,8 +10,6 @@ By automating mundane tasks and orchestrating interactions between microservices
 - Discoverable: allows newcomers to easily find out all parts of the system they can interact with.
 - Smart testing makes CI pipelines faster.
 - Integrates with other tools like telepresence.
-- Rigid and opinionated project structure that makes navigating multiple projects easier.
-- Empowers teams to collaborate effortlessly across different microservices.
 - Works with Docker Compose, Kubernetes and standalone apps.
 - Composable: configuration can be split into many files
 

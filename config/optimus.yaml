@@ -5,3 +5,5 @@ services:
       cmd: zsh -c
       file: ./start_dev.sh
   
+another_command: |
+  echo "testing"
