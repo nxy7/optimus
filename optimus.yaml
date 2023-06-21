@@ -1,15 +1,15 @@
-# global:
-#   shell_cmd: bash -c
+global:
+  shell_cmd: nu -c
 
 include:
   - ./config
 
 # script that initializes your dev environment
-# init: 
-#   description: |
-#     Start the application
-#   run: |
-#     docker compose -f compose.yml -f compose.dev.yml up -d  
+start: 
+  description: |
+    Start the application
+  run: |
+    docker compose -f compose.yml -f compose.dev.yml up -d  
   
 
 # script that runs e2e tests
@@ -27,3 +27,6 @@ services:
       shell: nu -c
       run: |
         pnpm i; pnpm dev;
+
+someCmd: |
+  echo "some command"

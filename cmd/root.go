@@ -20,11 +20,7 @@ var rootCmd = &cobra.Command{
 	Long:  `Optimus is opinionated but extensible monorepo framework that can work with most web app workflows: standalone services, docker-compose projects and kubernetes clusters. It's easy to extend optimus to do most monorepo tasks using your favourite shell language.`,
 }
 
-// Execute adds all child commands to the root command and sets flags appropriately.
-// This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
-
-	AppConfig = config.LoadConfig()
 	err := rootCmd.Execute()
 	if err != nil {
 		os.Exit(1)
@@ -32,13 +28,12 @@ func Execute() {
 }
 
 func init() {
-	// parse config
-	// config := config.Config {}
 	AppConfig = config.LoadConfig()
 
 	for name, command := range AppConfig.AdditionalCommands {
 		rootCmd.AddCommand(&cobra.Command{
-			Use: name,
+			Use:   name,
+			Short: command.Description,
 			Run: func(cmd *cobra.Command, args []string) {
 				e := exec.Command("bash", "-c", command.Run)
 				e.Stdout = os.Stdout
@@ -48,32 +43,10 @@ func init() {
 		})
 	}
 
-	for name, svc := range AppConfig.Services {
-		svcCmd := &cobra.Command{
-			Use:   name,
-			Short: name + " commands",
-		}
-		allCmds := svc.AdditionalCommands
-		allCmds["build"] = svc.Build
-		allCmds["dev"] = svc.Dev
-		allCmds["start"] = svc.Start
+	for _, svc := range AppConfig.Services {
+		svcCmd := svc.ToCobraCommand()
 
-		for k, c := range allCmds {
-			svcCmd.AddCommand(&cobra.Command{
-				Use:   k,
-				Short: k + " command",
-				Run: func(cmd *cobra.Command, args []string) {
-					e := exec.Command("bash", "-c", c.Run)
-					e.Stdout = os.Stdout
-
-					e.Run()
-
-				},
-			})
-
-		}
-
-		rootCmd.AddCommand(svcCmd)
+		rootCmd.AddCommand(&svcCmd)
 	}
 
 	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")

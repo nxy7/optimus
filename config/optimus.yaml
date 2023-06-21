@@ -2,8 +2,9 @@ services:
   backend:
     root: ./backend
     dev:
-      cmd: zsh -c
-      file: ./start_dev.sh
+      shell: zsh -c
+      run: |
+        echo 2
   
 another_command: |
   echo "testing"

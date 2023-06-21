@@ -1,20 +1,20 @@
 package config
 
 import (
-	"fmt"
 	"log"
 	"optimus/utils"
+	"strings"
 
 	"github.com/spf13/viper"
 )
 
 type Config struct {
-	Global             Global
-	BuildCmd           Cmd
-	PushCmd            Cmd
-	E2eTests           Cmd
-	Services           map[string]Service
-	AdditionalCommands map[string]Cmd
+	Global             *Global
+	BuildCmd           *Cmd
+	PushCmd            *Cmd
+	E2eTests           *Cmd
+	Services           map[string]*Service
+	AdditionalCommands map[string]*Cmd
 }
 
 type E2eTests struct {
@@ -23,12 +23,18 @@ type E2eTests struct {
 
 func LoadConfig() Config {
 	p := utils.ProjectRoot()
+
 	conf := LoadConfigFromPath(p)
+	conf.MergeConfigs(DefaultConfig())
+
 	return conf
 }
 
 func LoadConfigFromPath(p string) Config {
-	conf := DefaultConfig()
+	conf := Config{
+		Services:           make(map[string]*Service),
+		AdditionalCommands: make(map[string]*Cmd),
+	}
 	v := viper.New()
 	v.SetConfigType("yaml")
 	v.SetConfigName("optimus")
@@ -45,6 +51,7 @@ func LoadConfigFromPath(p string) Config {
 		panic(err)
 	}
 
+	include := make([]string, 0)
 	for k, v2 := range c {
 		if k == "include" {
 			strv2, o := v2.([]any)
@@ -53,34 +60,66 @@ func LoadConfigFromPath(p string) Config {
 			}
 
 			for _, v3 := range strv2 {
-				v3str, o := v3.(string)
+				includePath, o := v3.(string)
 				if !o {
 					panic("include only accepts strings")
 				}
-				_ = LoadConfigFromPath(v3str)
+				includePath = strings.Replace(includePath, "./", "/", 1)
+				include = append(include, includePath)
 			}
+		} else if k == "global" {
+			g := ParseGlobal(v2)
+			conf.Global = &g
+		} else if k == "e2e_tests" {
+			c := ParseCmd(v2)
+			conf.E2eTests = &c
+		} else if k == "services" {
+			servicesAny, o := v2.(map[string]any)
+			if !o {
+				panic("Unexpected services format")
+			}
+			for svcName, svcAny := range servicesAny {
+				s := ParseService(svcName, svcAny)
+				conf.Services[svcName] = &s
+			}
+		} else {
+			cmd := ParseCmd(v2)
+			conf.AdditionalCommands[k] = &cmd
 		}
+
+	}
+
+	for _, v2 := range include {
+		c2 := LoadConfigFromPath(p + v2)
+		conf.MergeConfigs(c2)
 	}
 
 	return conf
 }
 
+func (c1 *Config) MergeConfigs(c2 Config) {
+	if c1.Global == nil && c2.Global != nil {
+		c1.Global = c2.Global
+	}
+
+	if c1.E2eTests == nil && c2.E2eTests != nil {
+		c1.E2eTests = c2.E2eTests
+	}
+
+	for k, s := range c2.Services {
+		c1.Services[k] = s
+	}
+
+	// if c1.Global{}
+}
+
 func DefaultConfig() Config {
 	return Config{
-		Global:   Global{ShellCmd: "bash -c"},
-		BuildCmd: Cmd{},
-		PushCmd:  Cmd{},
-		E2eTests: Cmd{},
-		Services: map[string]Service{
-			"frontend": Service{
-				AdditionalCommands: make(map[string]Cmd),
-			},
-		},
-		AdditionalCommands: map[string]Cmd{
-			"testcmd": Cmd{
-				Description: "Gówno",
-				Run:         "echo 2",
-			},
-		},
+		Global:             &Global{ShellCmd: "bash -c"},
+		BuildCmd:           nil,
+		PushCmd:            nil,
+		E2eTests:           nil,
+		Services:           make(map[string]*Service),
+		AdditionalCommands: make(map[string]*Cmd),
 	}
 }
