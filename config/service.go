@@ -16,7 +16,7 @@ type Service struct {
 	Dev                *Cmd
 	PostDev            *Cmd
 	AdditionalCommands map[string]*Cmd
-	Test               *TestCmd
+	Test               *Cmd
 	DirHash            string
 }
 
@@ -44,6 +44,9 @@ func ParseService(name string, a any) Service {
 		} else if k == "build" {
 			c := ParseCmd(k, s.Root, v)
 			s.Build = &c
+		} else if k == "test" {
+			c := ParseCmd(k, s.Root, v)
+			s.Test = &c
 		}
 	}
 
@@ -66,7 +69,8 @@ func (s *Service) ToCobraCommand() cobra.Command {
 		allCmds["dev"] = s.Dev
 	}
 	if s.Test != nil {
-		allCmds["test"] = &s.Test.Cmd
+		cobraCmd := s.Test.ToCobraCommand()
+		svcCmd.AddCommand(&cobraCmd)
 	}
 
 	for _, c := range allCmds {

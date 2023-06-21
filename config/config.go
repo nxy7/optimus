@@ -67,7 +67,7 @@ func ParseConfig(a map[string]any, confPath string) Config {
 				conf.Services[svcName] = &s
 			}
 		} else {
-			cmd := ParseCmd(k, "", v2)
+			cmd := ParseCmd(k, confPath, v2)
 			conf.AdditionalCommands[k] = &cmd
 		}
 
@@ -114,6 +114,9 @@ func (c1 *Config) MergeConfigs(c2 Config) {
 		c1.Services[k] = s
 	}
 
+	for k, c := range c2.AdditionalCommands {
+		c1.AdditionalCommands[k] = c
+	}
 	// if c1.Global{}
 }
 

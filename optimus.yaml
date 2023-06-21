@@ -1,7 +1,7 @@
 global:
   shell_cmd: nu -c
 include:
-  - ./config/
+  - ./config
   # - ./commands_optimus.yml
 
 start: 
@@ -27,6 +27,9 @@ services:
       shell: nu -c
       run: |
         ls
+    test: |
+      echo "testing"
+      # false
     build: |
       ls
 

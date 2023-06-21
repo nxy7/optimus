@@ -1,12 +1,13 @@
 package config
 
 import (
+	"fmt"
 	"log"
-	"optimus/utils"
+	// "optimus/utils"
 
 	"os"
 	"os/exec"
-	"strings"
+	// "strings"
 
 	"github.com/spf13/cobra"
 )
@@ -18,6 +19,7 @@ type Cmd struct {
 	Description string
 	File        string
 	Shell       string
+	CommandFunc func() error
 }
 
 func ParseCmd(name string, root string, a any) Cmd {
@@ -65,6 +67,8 @@ func ParseCmd(name string, root string, a any) Cmd {
 		panic("Command cannot have both 'file' and 'cmd' fields set")
 	}
 
+	command.CommandFunc = command.GenerateCommandFunc()
+
 	return command
 }
 
@@ -73,17 +77,29 @@ func (c *Cmd) ToCobraCommand() cobra.Command {
 		Use:   c.Name,
 		Short: c.Description,
 		Run: func(cmd *cobra.Command, args []string) {
-			cmdPath := c.Path
-			cmdPath = strings.Replace(cmdPath, "./", "/", 1)
-
-			e := exec.Command("bash", "-c", c.Run)
-			e.Dir = utils.ProjectRoot() + cmdPath
-			e.Stdout = os.Stdout
-			e.Stderr = os.Stderr
-			e.Stdin = os.Stdin
-
-			e.Run()
+			if c.CommandFunc == nil {
+				c.CommandFunc = c.GenerateCommandFunc()
+			}
+			err := c.CommandFunc()
+			if err != nil {
+				fmt.Println("Command failed")
+				fmt.Println(c)
+				panic(err)
+			}
 		},
+	}
+}
+
+func (c *Cmd) GenerateCommandFunc() func() error {
+	return func() error {
+		e := exec.Command("bash", "-c", c.Run)
+		e.Dir = c.Path
+		e.Stdout = os.Stdout
+		e.Stderr = os.Stderr
+		e.Stdin = os.Stdin
+
+		err := e.Run()
+		return err
 	}
 }
 

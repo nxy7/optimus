@@ -1,10 +1,14 @@
 services:
   backend:
-    root: ./backend
+    root: ./config
     dev:
       shell: zsh -c
       run: |
         echo 2
+    test: |
+      echo "also testing"
   
 another_command: |
-  echo "testing"
+  echo "Just some other command"
+  ls
+  echo "We need to make it invoke from the folder that the file resides in tho"
