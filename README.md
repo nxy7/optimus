@@ -18,6 +18,61 @@ Monorepo management tool that's extensible and will fit any workflow.
 
 I'm not huge fan of shell scripting, but when it comes to managing whole project it just makes sense. Shell scripting languages treat external executables as first class objects, which makes it easy to quickly adapt Optimus to any workflow. Most developers are familliar with at least one shell scripting language (even if only to launch their apps), so allowing them to reuse existing knowledge is much better than forcing them into using specific tech (many simmilar tools use python/starlark/lua). If you want to use sane scripting language while configuring Optimus I recommend `nushell`.
 
+# Optimus works well together with other tools
+
+If you really think about it, Optimus is mostly made to organize scripts that would otherwise be loosely coupled and sitting in random places of your project. If you think about it as script runner with some extra perks it makes sense that you can extend it using any other available tools. Use any container builder or testing framework you want, in the end Optimus can use anything that's available on your system. This approach works great with *nix* projects, where you can make sure that all tools used with Optimus are pinned at just the right versions.
+
+# Optimus configuration
+
+Optimus configuration is very simple to understand really, it only has 2 concepts right now - services and commands.
+
+## Command
+
+Command accepts 2 notations, short and long one.
+Short:
+```yaml
+someCommand: |
+  echo "it's regular bash command here"
+```
+Long one (with all possible fields):
+```yaml
+someCommand: 
+  description: |
+    Your command description that shows up when you run 'optimus'
+  shell: nu -c
+  run:
+    print "now it's nushell command and you can use"; sleep 1sec; print "nushell syntax instead";
+anotherCommand:
+  description: |
+    This command run's bash script from file, not as -c
+  file: ./path_to_script.sh
+```
+
+Short command is the same as having command with no description and `bash` as shell. One note though, you cannot have both `file` and `run` fields in the same command. Any config entry besides specified keywords such as `services`, `global` or `test` will be treated as command. This allows you to group all mundane tasks you're usually doing inside your repository and run them with `optimus someCommand`
+
+
+## Services
+
+Services are meant as a way to gather microservice specific commands. All commands from services have the same *syntax* as commands, but some of them are treated specially. For example running `optimus test` will run "test" command of all services, cache results and if the content of your services doesn't change it will not rerun those tests on subsequent runs of `optimus test`. 
+
+Example service:
+```yaml
+services:
+  frontendService:
+    # if you want to name your service differently than the folder containing it, use 'root' propety so commands work fine
+    root: ./frontend
+    dev: echo "it's just 'command' so you can use long or short syntax here"
+    test: echo "same as above"
+  backend:
+    dev: |
+      echo "Commands are ran off their microservices directories"
+      ls
+      echo "ls above will output dir of $PROJECT_ROOT/backend folder"
+    build: |
+      echo "you are responsible for running docker image build commands"
+      echo "if you run 'optimus build' optimus will run build commands of all services cocurrently"
+```
+
 # Example configurations
 
 ## Standalone App
