@@ -24,7 +24,7 @@ func ParseService(name string, a any) Service {
 	// fmt.Println("Parsing service")
 	s := Service{
 		Name: name,
-		Root: name,
+		Root: "./" + name,
 	}
 
 	amap, o := a.(map[string]any)

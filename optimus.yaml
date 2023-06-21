@@ -1,7 +1,8 @@
 global:
   shell_cmd: nu -c
 include:
-  - ./config
+  - ./config/
+  # - ./commands_optimus.yml
 
 start: 
   description: |
@@ -29,5 +30,7 @@ services:
     build: |
       ls
 
-lscmd: |
-  ls
+lscmd:
+  root: ./config
+  run: |
+    ls

@@ -22,10 +22,9 @@ type Cmd struct {
 
 func ParseCmd(name string, root string, a any) Cmd {
 	command := Cmd{
-		Run:  "",
-		Name: name,
-		Path: root,
-		// RootPath string,
+		Run:         "",
+		Name:        name,
+		Path:        root,
 		Description: "",
 		File:        "",
 		Shell:       "bash -c",
@@ -37,7 +36,7 @@ func ParseCmd(name string, root string, a any) Cmd {
 	}
 
 	obj, ok := a.(map[string]any)
-	legalFields := map[string]struct{}{"run": {}, "description": {}, "shell": {}, "file": {}}
+	legalFields := map[string]struct{}{"run": {}, "description": {}, "shell": {}, "file": {}, "root": {}}
 	if !ok {
 		panic("Invalid Cmd shape")
 	}
@@ -57,6 +56,8 @@ func ParseCmd(name string, root string, a any) Cmd {
 			command.Shell = vStr
 		} else if k == "file" {
 			command.File = vStr
+		} else if k == "root" {
+			command.Path = vStr
 		}
 	}
 

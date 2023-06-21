@@ -30,29 +30,13 @@ func LoadConfig() Config {
 	return conf
 }
 
-func LoadConfigFromPath(p string) Config {
+func ParseConfig(a map[string]any, confPath string) Config {
 	conf := Config{
 		Services:           make(map[string]*Service),
 		AdditionalCommands: make(map[string]*Cmd),
 	}
-	v := viper.New()
-	v.SetConfigType("yaml")
-	v.SetConfigName("optimus")
-	v.AddConfigPath(p)
-
-	err := v.ReadInConfig()
-	if err != nil {
-		log.Fatalf("Could not read config at path: %v\n%v", p, err)
-	}
-
-	var c map[string]any
-	err = v.Unmarshal(&c)
-	if err != nil {
-		panic(err)
-	}
-
 	include := make([]string, 0)
-	for k, v2 := range c {
+	for k, v2 := range a {
 		if k == "include" {
 			strv2, o := v2.([]any)
 			if !o {
@@ -90,10 +74,30 @@ func LoadConfigFromPath(p string) Config {
 	}
 
 	for _, v2 := range include {
-		c2 := LoadConfigFromPath(p + v2)
+		c2 := LoadConfigFromPath(confPath + v2)
 		conf.MergeConfigs(c2)
 	}
+	return conf
+}
 
+func LoadConfigFromPath(p string) Config {
+	v := viper.New()
+	v.SetConfigType("yaml")
+	v.SetConfigName("optimus")
+	v.AddConfigPath(p)
+
+	err := v.ReadInConfig()
+	if err != nil {
+		log.Fatalf("Could not read config at path: %v\n%v", p, err)
+	}
+
+	var c map[string]any
+	err = v.Unmarshal(&c)
+	if err != nil {
+		panic(err)
+	}
+
+	conf := ParseConfig(c, p)
 	return conf
 }
 
