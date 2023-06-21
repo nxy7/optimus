@@ -36,10 +36,10 @@ func ParseService(name string, a any) Service {
 
 	for k, v := range amap {
 		if k == "dev" {
-			c := ParseCmd(v)
+			c := ParseCmd(k, v)
 			s.Dev = &c
 		} else if k == "build" {
-			c := ParseCmd(v)
+			c := ParseCmd(k, v)
 			s.Build = &c
 		} else if k == "root" {
 			str := v.(string)
@@ -77,6 +77,7 @@ func (s *Service) ToCobraCommand() cobra.Command {
 			Run: func(cmd *cobra.Command, args []string) {
 				e := exec.Command("bash", "-c", c.Run)
 				e.Stdout = os.Stdout
+				e.Stderr = os.Stderr
 
 				e.Run()
 

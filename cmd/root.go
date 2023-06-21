@@ -5,7 +5,6 @@ package cmd
 
 import (
 	"os"
-	"os/exec"
 
 	"optimus/config"
 
@@ -30,17 +29,9 @@ func Execute() {
 func init() {
 	AppConfig = config.LoadConfig()
 
-	for name, command := range AppConfig.AdditionalCommands {
-		rootCmd.AddCommand(&cobra.Command{
-			Use:   name,
-			Short: command.Description,
-			Run: func(cmd *cobra.Command, args []string) {
-				e := exec.Command("bash", "-c", command.Run)
-				e.Stdout = os.Stdout
-
-				e.Run()
-			},
-		})
+	for _, command := range AppConfig.AdditionalCommands {
+		cobraCmd := command.ToCobraCommand()
+		rootCmd.AddCommand(&cobraCmd)
 	}
 
 	for _, svc := range AppConfig.Services {

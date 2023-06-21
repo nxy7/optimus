@@ -71,7 +71,7 @@ func LoadConfigFromPath(p string) Config {
 			g := ParseGlobal(v2)
 			conf.Global = &g
 		} else if k == "e2e_tests" {
-			c := ParseCmd(v2)
+			c := ParseCmd(k, v2)
 			conf.E2eTests = &c
 		} else if k == "services" {
 			servicesAny, o := v2.(map[string]any)
@@ -83,7 +83,7 @@ func LoadConfigFromPath(p string) Config {
 				conf.Services[svcName] = &s
 			}
 		} else {
-			cmd := ParseCmd(v2)
+			cmd := ParseCmd(k, v2)
 			conf.AdditionalCommands[k] = &cmd
 		}
 

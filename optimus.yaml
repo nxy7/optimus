@@ -9,6 +9,7 @@ start:
   description: |
     Start the application
   run: |
+    echo "sup"
     docker compose -f compose.yml -f compose.dev.yml up -d  
   
 

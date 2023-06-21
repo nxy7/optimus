@@ -1,17 +1,25 @@
 package config
 
-import "log"
+import (
+	"log"
+	"os"
+	"os/exec"
+
+	"github.com/spf13/cobra"
+)
 
 type Cmd struct {
 	Run         string
+	Name        string
 	Description string
 	File        string
 	Shell       string
 }
 
-func ParseCmd(a any) Cmd {
+func ParseCmd(name string, a any) Cmd {
 	command := Cmd{
 		Run:         "",
+		Name:        name,
 		Description: "",
 		File:        "",
 		Shell:       "bash -c",
@@ -51,6 +59,20 @@ func ParseCmd(a any) Cmd {
 	}
 
 	return command
+}
+
+func (c *Cmd) ToCobraCommand() cobra.Command {
+	return cobra.Command{
+		Use:   c.Name,
+		Short: c.Description,
+		Run: func(cmd *cobra.Command, args []string) {
+			e := exec.Command("bash", "-c", c.Run)
+			e.Stdout = os.Stdout
+			e.Stderr = os.Stderr
+
+			e.Run()
+		},
+	}
 }
 
 type TestCmd struct {
