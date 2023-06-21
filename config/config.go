@@ -33,7 +33,9 @@ func DefaultConfig() Config {
 		PushCmd:  Cmd{},
 		E2eTests: Cmd{},
 		Services: map[string]Service{
-			"test": Service{},
+			"frontend": Service{
+				AdditionalCommands: make(map[string]Cmd),
+			},
 		},
 		AdditionalCommands: map[string]Cmd{
 			"testcmd": Cmd{

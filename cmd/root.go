@@ -48,5 +48,33 @@ func init() {
 		})
 	}
 
+	for name, svc := range AppConfig.Services {
+		svcCmd := &cobra.Command{
+			Use:   name,
+			Short: name + " commands",
+		}
+		allCmds := svc.AdditionalCommands
+		allCmds["build"] = svc.Build
+		allCmds["dev"] = svc.Dev
+		allCmds["start"] = svc.Start
+
+		for k, c := range allCmds {
+			svcCmd.AddCommand(&cobra.Command{
+				Use:   k,
+				Short: k + " command",
+				Run: func(cmd *cobra.Command, args []string) {
+					e := exec.Command("bash", "-c", c.Run)
+					e.Stdout = os.Stdout
+
+					e.Run()
+
+				},
+			})
+
+		}
+
+		rootCmd.AddCommand(svcCmd)
+	}
+
 	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
