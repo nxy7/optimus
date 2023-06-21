@@ -11,7 +11,8 @@ Monorepo management tool that's extensible and will fit any workflow.
 - Smart testing makes CI pipelines faster.
 - Integrates with other tools like telepresence.
 - Works with Docker Compose, Kubernetes and standalone apps.
-- Composable: configuration can be split into many files
+- Composable: configuration can be split into many files.
+- Commands work from any directory within repository.
 
 # Why use shell to extend Optimus capabilities
 
@@ -21,9 +22,95 @@ I'm not huge fan of shell scripting, but when it comes to managing whole project
 
 ## Standalone App
 
+```yaml
+# invoked via 'optimus frontend dev'
+services:
+  frontend:
+    dev: |
+      pnpm i && pnpm dev
+
+  backend:
+    dev: |
+      cargo run
+
+# invoked via 'optimus utilityFunction'
+utilityFunction:
+  description: |
+    Function that does some repository related work
+  run: |
+    echo "Working..."
+```
+
 ## Docker Compose
 
+```yaml
+# invoked via 'optimus start'
+start: |
+  docker compose -f compose.yml -f compose.dev.yml up -d
+
+# invoked via 'optimus stop'
+stop: |
+  docker compose -f compose.yml -f compose.dev.yml down
+
+# if any service contains 'build' you can use 'optimus build' to run builds in all services cocurrently
+# it works the same for 'test' command
+services:
+  frontend:
+    dev: |
+      pnpm i && pnpm dev
+    build: |
+      docker build .
+
+  backend:
+    dev: |
+      cargo run
+    build: |
+      docker build .
+```
+
 ## Kubernetes
+
+Here's part of configuration that I'm using for the service I'm developing that runs on Kubernetes
+```yaml
+# 'optimus start' invokes external script, which is useful if you have more logic to some step
+start:
+  description: |
+    Start streampai application
+  run: |
+    nu ./scripts/kubernetes.nu init
+
+clean: 
+  description: |
+    Delete all project resources
+  run: |
+    nu ./scripts/kubernetes.nu purge
+
+telepresence-reset: 
+  description: |
+    Telepresence sometimes hangs and needs to be reset using this command
+  run: |
+    nu ./scripts/kubernetes.nu reset-telepresence     
+
+services:
+  frontend:
+    dev: |
+      telepresence intercept frontend --port 3000:http --mechanism tcp --namespace streampai
+      pnpm i && pnpm dev
+    build: |
+      docker run .
+  backend/main:
+    root: ./backend
+    dev: |
+      telepresence intercept backend --port 7000:http --mechanism tcp --namespace streampai
+      cargo run --bin main
+    build: |
+      docker run . -f Dockerfile.main
+  backend/streamchat:
+    root: ./backend
+    dev: |
+       cargo run --bin streamchat
+```
+
 
 # How to install
 
