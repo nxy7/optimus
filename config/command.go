@@ -2,24 +2,30 @@ package config
 
 import (
 	"log"
+	"optimus/utils"
+
 	"os"
 	"os/exec"
+	"strings"
 
 	"github.com/spf13/cobra"
 )
 
 type Cmd struct {
 	Run         string
+	Path        string
 	Name        string
 	Description string
 	File        string
 	Shell       string
 }
 
-func ParseCmd(name string, a any) Cmd {
+func ParseCmd(name string, root string, a any) Cmd {
 	command := Cmd{
-		Run:         "",
-		Name:        name,
+		Run:  "",
+		Name: name,
+		Path: root,
+		// RootPath string,
 		Description: "",
 		File:        "",
 		Shell:       "bash -c",
@@ -66,9 +72,14 @@ func (c *Cmd) ToCobraCommand() cobra.Command {
 		Use:   c.Name,
 		Short: c.Description,
 		Run: func(cmd *cobra.Command, args []string) {
+			cmdPath := c.Path
+			cmdPath = strings.Replace(cmdPath, "./", "/", 1)
+
 			e := exec.Command("bash", "-c", c.Run)
+			e.Dir = utils.ProjectRoot() + cmdPath
 			e.Stdout = os.Stdout
 			e.Stderr = os.Stderr
+			e.Stdin = os.Stdin
 
 			e.Run()
 		},

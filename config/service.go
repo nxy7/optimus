@@ -1,9 +1,6 @@
 package config
 
 import (
-	"os"
-	"os/exec"
-
 	"github.com/spf13/cobra"
 )
 
@@ -27,6 +24,7 @@ func ParseService(name string, a any) Service {
 	// fmt.Println("Parsing service")
 	s := Service{
 		Name: name,
+		Root: name,
 	}
 
 	amap, o := a.(map[string]any)
@@ -34,20 +32,21 @@ func ParseService(name string, a any) Service {
 		panic("Invalid service format")
 	}
 
+	r, o := amap["root"]
+	if o {
+		s.Root = r.(string)
+	}
+
 	for k, v := range amap {
 		if k == "dev" {
-			c := ParseCmd(k, v)
+			c := ParseCmd(k, s.Root, v)
 			s.Dev = &c
 		} else if k == "build" {
-			c := ParseCmd(k, v)
+			c := ParseCmd(k, s.Root, v)
 			s.Build = &c
-		} else if k == "root" {
-			str := v.(string)
-			s.Root = str
 		}
 	}
 
-	// fmt.Println(s)
 	return s
 }
 
@@ -70,19 +69,9 @@ func (s *Service) ToCobraCommand() cobra.Command {
 		allCmds["test"] = &s.Test.Cmd
 	}
 
-	for k, c := range allCmds {
-		svcCmd.AddCommand(&cobra.Command{
-			Use:   k,
-			Short: k + " command",
-			Run: func(cmd *cobra.Command, args []string) {
-				e := exec.Command("bash", "-c", c.Run)
-				e.Stdout = os.Stdout
-				e.Stderr = os.Stderr
-
-				e.Run()
-
-			},
-		})
+	for _, c := range allCmds {
+		cobraCmd := c.ToCobraCommand()
+		svcCmd.AddCommand(&cobraCmd)
 	}
 
 	return svcCmd

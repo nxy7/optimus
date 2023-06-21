@@ -1,10 +1,8 @@
 global:
   shell_cmd: nu -c
-
 include:
   - ./config
 
-# script that initializes your dev environment
 start: 
   description: |
     Start the application
@@ -23,11 +21,13 @@ e2e_tests:
 
 services:
   frontend:
-    root: ./frontend
+    root: ./config
     dev:
       shell: nu -c
       run: |
-        pnpm i; pnpm dev;
+        ls
+    build: |
+      ls
 
-someCmd: |
-  echo "some command"
+lscmd: |
+  ls
