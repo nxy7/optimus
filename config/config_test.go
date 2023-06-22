@@ -14,3 +14,7 @@ func TestLoadConfig(t *testing.T) {
 	}
 	fmt.Printf("c: %v\n", string(j))
 }
+
+func TestConfigCanBeMarchaled(t *testing.T) {
+
+}

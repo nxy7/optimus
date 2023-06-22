@@ -1,12 +1,15 @@
 package config
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
+
 	// "optimus/utils"
 
 	"os"
 	"os/exec"
+
 	// "strings"
 
 	"github.com/spf13/cobra"
@@ -20,6 +23,27 @@ type Cmd struct {
 	File        string
 	Shell       string
 	CommandFunc func() error
+}
+
+func (c Cmd) MarshalJSON() ([]byte, error) {
+	fmt.Println("elo")
+	return json.Marshal(&struct {
+		Run         string
+		Path        string
+		Name        string
+		Description string
+		File        string
+		Shell       string
+		CommandFunc string
+	}{
+		Run:         c.Run,
+		Path:        c.Path,
+		Name:        c.Name,
+		Description: c.Description,
+		File:        c.File,
+		Shell:       c.Shell,
+		CommandFunc: "Function",
+	})
 }
 
 func ParseCmd(name string, root string, a any) Cmd {

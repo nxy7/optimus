@@ -31,7 +31,7 @@ func ProjectRoot() string {
 		return ""
 	})()
 	if p == "" {
-		panic("no path found")
+		panic("Not a git repository")
 	}
 
 	return p
