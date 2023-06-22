@@ -4,15 +4,15 @@ Monorepo management tool that's extensible and will fit any workflow.
 
 # Key Features:
 
-- Simplified monorepo management.
-- Doesn't use obscure languages for configuration.
-- Extensible using any shell that's available on the system.
-- Discoverable: allows newcomers to easily find out all parts of the system they can interact with.
-- Smart testing makes CI pipelines faster.
-- Integrates with other tools like telepresence.
-- Works with Docker Compose, Kubernetes and standalone apps.
-- Composable: configuration can be split into many files.
-- Commands work from any directory within repository.
+- Simplified monorepo management. ☑
+- Doesn't use obscure languages for configuration. ☑
+- Extensible using any shell that's available on the system. ☑
+- Discoverable: allows newcomers to easily find out all parts of the system they can interact with. ☑
+- Smart testing makes CI pipelines faster. ☒
+- Integrates with other tools like telepresence. ☒
+- Works with Docker Compose, Kubernetes and standalone apps. ☑
+- Composable: configuration can be split into many files. ☑
+- Commands work from any directory within repository. ☑
 
 # Why use shell to extend Optimus capabilities
 
