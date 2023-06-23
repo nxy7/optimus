@@ -1,0 +1,14 @@
+deeply_nested_cmd:
+  description: |
+    Just some deeply nested command
+  run: |
+    echo "running deeply nested command"
+    ls
+
+services:
+  deeply_nested_service:
+    root: .
+    test: |
+      echo "testing deeply nested service"
+      ls
+      false

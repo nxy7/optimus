@@ -4,29 +4,46 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
-
-	// "optimus/utils"
+	"optimus/cache"
+	"optimus/dirhash"
 
 	"os"
 	"os/exec"
-
-	// "strings"
 
 	"github.com/spf13/cobra"
 )
 
 type Cmd struct {
-	Run         string
-	Path        string
-	Name        string
-	Description string
-	File        string
-	Shell       string
-	CommandFunc func() error
+	Run string
+	// Parent service can be empty in case of top level commands
+	ParentService       *Service
+	Path                string
+	DirHash             string
+	Cache               bool
+	DidRun              bool
+	DidExitSuccessfully bool
+	Name                string
+	Description         string
+	File                string
+	Shell               string
+	CommandFunc         func() error
+}
+
+func (c Cmd) ToCmdCache() cache.CommandCache {
+	parentName := ""
+	if c.ParentService != nil {
+		parentName = c.ParentService.Name
+	}
+	return cache.CommandCache{
+		Name:            c.Name,
+		Output:          "",
+		ParentService:   parentName,
+		RanSuccessfully: c.DidExitSuccessfully,
+		Hash:            c.DirHash,
+	}
 }
 
 func (c Cmd) MarshalJSON() ([]byte, error) {
-	fmt.Println("elo")
 	return json.Marshal(&struct {
 		Run         string
 		Path        string
@@ -46,14 +63,25 @@ func (c Cmd) MarshalJSON() ([]byte, error) {
 	})
 }
 
-func ParseCmd(name string, root string, a any) Cmd {
+func ParseCmd(name string, root string, parentService *Service, a any) Cmd {
 	command := Cmd{
-		Run:         "",
-		Name:        name,
-		Path:        root,
-		Description: "",
-		File:        "",
-		Shell:       "bash -c",
+		Run:           "",
+		Name:          name,
+		Path:          root,
+		ParentService: parentService,
+		Description:   "",
+		File:          "",
+		Shell:         "bash -c",
+	}
+	if parentService != nil && parentService.DirHash != "" {
+		command.DirHash = parentService.DirHash
+	} else {
+		dh, err := dirhash.HashDir(root, make([]string, 0))
+		if err != nil {
+			panic(err)
+		} else {
+			command.DirHash = dh
+		}
 	}
 	s, ok := a.(string)
 	if ok {
@@ -62,7 +90,7 @@ func ParseCmd(name string, root string, a any) Cmd {
 	}
 
 	obj, ok := a.(map[string]any)
-	legalFields := map[string]struct{}{"run": {}, "description": {}, "shell": {}, "file": {}, "root": {}}
+	legalFields := map[string]struct{}{"run": {}, "description": {}, "shell": {}, "file": {}, "root": {}, "cache": {}}
 	if !ok {
 		panic("Invalid Cmd shape")
 	}
@@ -84,6 +112,8 @@ func ParseCmd(name string, root string, a any) Cmd {
 			command.File = vStr
 		} else if k == "root" {
 			command.Path = vStr
+		} else if k == "cache" {
+			command.Cache = vStr == "true"
 		}
 	}
 
@@ -131,6 +161,10 @@ func (c *Cmd) GenerateCommandFunc() func() error {
 		e.Stdin = os.Stdin
 
 		err := e.Run()
+		c.DidRun = true
+		if err == nil {
+			c.DidExitSuccessfully = true
+		}
 		return err
 	}
 }

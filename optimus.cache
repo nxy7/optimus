@@ -1,0 +1,26 @@
+{
+	"ProjectHash": "\ufffdb7\ufffd\ufffdo|\ufffdP \ufffd\ufffd\u0011\ufffd\u000e\u0001N\ufffdz\ufffd\ufffd+o\ufffdAa\u000cz\ufffd\ufffd\u0007\ufffd",
+	"Commands": [
+		{
+			"Name": "test",
+			"Output": "",
+			"Parent": "",
+			"RanSuccessfully": false,
+			"Checksum": "F�lO�z)q�g���Fj;,j2�����m\u0014�!�X�\u0008"
+		},
+		{
+			"Name": "test",
+			"Output": "",
+			"Parent": "optimus",
+			"RanSuccessfully": true,
+			"Checksum": "\ufffd\u000e\ufffd%\ufffd\u0004\ufffdj\ufffd\ufffd\ufffdy\ufffd\ufffdu\ufffd\ufffd5\ufffd{Gz\ufffdFU\u00071\ufffd\u001c\ufffḏ"
+		},
+		{
+			"Name": "test",
+			"Output": "",
+			"Parent": "deeply_nested_service",
+			"RanSuccessfully": false,
+			"Checksum": "F\ufffdlO\ufffdz)q\ufffdg\ufffd\ufffd\ufffdFj;,j2\ufffd\ufffd\ufffd\ufffd\ufffdm\u0014\ufffd!\ufffdX\ufffd\u0008"
+		}
+	]
+}

@@ -167,6 +167,9 @@ services:
        cargo run --bin streamchat
 ```
 
+# Caching
+
+Optimus can cache test commands for you, which shortens feedback loop and makes CI significantly faster. Cache is saved in `optimus.cache` file in the root of your project, so if you don't add this file to `.gitignore` it'll be shared with your CI and other coworkers. 
 
 # How to install
 

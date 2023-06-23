@@ -17,6 +17,20 @@ type Config struct {
 	AdditionalCommands map[string]*Cmd
 }
 
+func (c *Config) FinishedCommands() []*Cmd {
+	commands := make([]*Cmd, 0)
+
+	for _, s := range c.Services {
+		for _, c2 := range s.Commands {
+			if c2.DidRun {
+				commands = append(commands, c2)
+			}
+		}
+	}
+
+	return commands
+}
+
 type E2eTests struct {
 	Cmd string
 }
@@ -55,7 +69,7 @@ func ParseConfig(a map[string]any, confPath string) Config {
 			g := ParseGlobal(v2)
 			conf.Global = &g
 		} else if k == "e2e_tests" {
-			c := ParseCmd(k, "", v2)
+			c := ParseCmd(k, confPath, nil, v2)
 			conf.E2eTests = &c
 		} else if k == "services" {
 			servicesAny, o := v2.(map[string]any)
@@ -63,11 +77,11 @@ func ParseConfig(a map[string]any, confPath string) Config {
 				panic("Unexpected services format")
 			}
 			for svcName, svcAny := range servicesAny {
-				s := ParseService(svcName, svcAny)
+				s := ParseService(svcName, svcAny, confPath)
 				conf.Services[svcName] = &s
 			}
 		} else {
-			cmd := ParseCmd(k, confPath, v2)
+			cmd := ParseCmd(k, confPath, nil, v2)
 			conf.AdditionalCommands[k] = &cmd
 		}
 

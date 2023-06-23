@@ -1,15 +1,2 @@
-services:
-  backend:
-    root: ./config
-    dev:
-      shell: zsh -c
-      run: |
-        echo 2
-    test: |
-      echo "also testing"
-      false
-  
-another_command: |
-  echo "Just some other command"
-  ls
-  echo "We need to make it invoke from the folder that the file resides in tho"
+include:
+  - ./nested

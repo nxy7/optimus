@@ -3,6 +3,7 @@ package config
 import (
 	"optimus/dirhash"
 	"optimus/utils"
+	"os"
 
 	"strings"
 
@@ -15,14 +16,13 @@ type Service struct {
 	// in the future I'd like to be automatically get service version from package.json/cargo.toml and other files, so it can be used to tag images
 	// Version            string
 	// Language           string
-	Root               string
-	Start              *Cmd
-	Build              *Cmd
-	Dev                *Cmd
-	PostDev            *Cmd
-	AdditionalCommands map[string]*Cmd
-	Test               *Cmd
-	DirHash            string
+
+	// Path that holds microservice
+	Root     string
+	Commands map[string]*Cmd
+
+	// Hash of whole directory
+	DirHash string
 }
 
 func (s *Service) UpdateDirhash() {
@@ -35,11 +35,12 @@ func (s *Service) UpdateDirhash() {
 	s.DirHash = hash
 }
 
-func ParseService(name string, a any) Service {
+func ParseService(name string, a any, configPath string) Service {
 	// fmt.Println("Parsing service")
 	s := Service{
-		Name: name,
-		Root: "./" + name,
+		Name:     name,
+		Root:     configPath + string(os.PathSeparator) + name,
+		Commands: make(map[string]*Cmd, 0),
 	}
 
 	amap, o := a.(map[string]any)
@@ -49,22 +50,25 @@ func ParseService(name string, a any) Service {
 
 	r, o := amap["root"]
 	if o {
-		s.Root = r.(string)
+		rootVal := r.(string)
+		rootVal = strings.Replace(rootVal, "./", "", 1)
+		s.Root = configPath + string(os.PathSeparator) + rootVal
 	}
 
 	for k, v := range amap {
 		if k == "dev" {
-			c := ParseCmd(k, s.Root, v)
-			s.Dev = &c
+			c := ParseCmd(k, s.Root, &s, v)
+			s.Commands["dev"] = &c
 		} else if k == "build" {
-			c := ParseCmd(k, s.Root, v)
-			s.Build = &c
+			c := ParseCmd(k, s.Root, &s, v)
+			s.Commands["build"] = &c
 		} else if k == "test" {
-			c := ParseCmd(k, s.Root, v)
-			s.Test = &c
+			c := ParseCmd(k, s.Root, &s, v)
+			s.Commands["test"] = &c
 		}
 	}
 
+	// serviceHash :=
 	return s
 }
 
@@ -73,22 +77,8 @@ func (s *Service) ToCobraCommand() cobra.Command {
 		Use:   s.Name,
 		Short: "Commands related to " + s.Name + " service.",
 	}
-	allCmds := s.AdditionalCommands
-	if allCmds == nil {
-		allCmds = make(map[string]*Cmd)
-	}
-	if s.Build != nil {
-		allCmds["build"] = s.Build
-	}
-	if s.Dev != nil {
-		allCmds["dev"] = s.Dev
-	}
-	if s.Test != nil {
-		cobraCmd := s.Test.ToCobraCommand()
-		svcCmd.AddCommand(&cobraCmd)
-	}
 
-	for _, c := range allCmds {
+	for _, c := range s.Commands {
 		cobraCmd := c.ToCobraCommand()
 		svcCmd.AddCommand(&cobraCmd)
 	}
