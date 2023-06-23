@@ -28,7 +28,7 @@ var testCmd = &cobra.Command{
 		if err != nil {
 			panic(err)
 		} else {
-			fmt.Printf("ca: %v\n", ca)
+			// fmt.Printf("ca: %v\n", ca)
 		}
 
 		services := AppConfig.Services
@@ -36,8 +36,20 @@ var testCmd = &cobra.Command{
 		var wg sync.WaitGroup
 		for _, s := range services {
 			sTestCmd := s.Commands["test"]
+			cachedRes := sTestCmd.GetCmdCache(ca)
+			if cachedRes != nil {
+				if string(sTestCmd.DirHash) == string(cachedRes.Hash) {
+					fmt.Printf("Command %v is in cache\n", sTestCmd.ParentService.Name)
+					continue
+					// fmt.Printf("Cmd:\n%+v\nCached:\n%+v\n", sTestCmd, cachedRes)
+				} else {
+					fmt.Printf("\nDifferent dirhash for %v\nCmd: %v\nCache: %v\n\n", sTestCmd.ParentService.Name, sTestCmd.DirHash, cachedRes.Hash)
+				}
+
+			}
 			if sTestCmd != nil && s != nil {
 				wg.Add(1)
+
 				testCmd := sTestCmd.CommandFunc
 				if testCmd == nil {
 					testCmd = sTestCmd.GenerateCommandFunc()
@@ -47,6 +59,8 @@ var testCmd = &cobra.Command{
 					if err != nil {
 						errors = append(errors, err)
 					}
+					cached := sTestCmd.ToCmdCache()
+					cached.UpdateCache(ca)
 					wg.Done()
 				}()
 
@@ -54,12 +68,12 @@ var testCmd = &cobra.Command{
 		}
 		wg.Wait()
 
-		for _, c := range AppConfig.FinishedCommands() {
-			cc := c.ToCmdCache()
-			cc.UpdateCache(ca)
-		}
+		// for _, c := range AppConfig.FinishedCommands() {
+		// 	cc := c.ToCmdCache()
+		// 	cc.UpdateCache(ca)
+		// }
 
-		fmt.Println(ca)
+		// fmt.Println(ca)
 		err = ca.SaveCache()
 		if err != nil {
 			log.Fatal(err)

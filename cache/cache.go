@@ -12,7 +12,7 @@ var CacheFilename = "optimus.cache"
 var AppCache *Cache
 
 type Cache struct {
-	ProjectHash string          `json:"ProjectHash"`
+	ProjectHash []byte          `json:"ProjectHash"`
 	Commands    []*CommandCache `json:"Commands"`
 }
 
@@ -22,7 +22,7 @@ type CommandCache struct {
 	Output          string `json:"Output"`
 	ParentService   string `json:"Parent"`
 	RanSuccessfully bool   `json:"RanSuccessfully"`
-	Hash            string `json:"Checksum"`
+	Hash            []byte `json:"Checksum"`
 	// DependsOn       []struct {
 	// 	Name string
 	// 	Hash string
@@ -30,17 +30,14 @@ type CommandCache struct {
 }
 
 func (cc *CommandCache) UpdateCache(c *Cache) {
-	found := false
 	for _, cc2 := range c.Commands {
 		if cc2.Name == cc.Name && cc2.ParentService == cc.ParentService {
 			cc2.RanSuccessfully = cc.RanSuccessfully
 			cc2.Hash = cc.Hash
-			found = true
+			return
 		}
 	}
-	if !found {
-		c.Commands = append(c.Commands, cc)
-	}
+	c.Commands = append(c.Commands, cc)
 }
 
 func LoadCache() (*Cache, error) {
@@ -50,7 +47,7 @@ func LoadCache() (*Cache, error) {
 	p := utils.ProjectRoot()
 
 	if _, err := os.Stat(p + string(os.PathSeparator) + CacheFilename); os.IsNotExist(err) {
-		projectHash, err := dirhash.HashDir(p, make([]string, 0))
+		projectHash, err := dirhash.HashDir(p, dirhash.DefaultIgnoredPaths())
 		if err != nil {
 			return nil, err
 		}
@@ -83,7 +80,7 @@ func LoadCache() (*Cache, error) {
 }
 
 func (c *Cache) SaveCache() error {
-	projectHash, _ := dirhash.HashDir(utils.ProjectRoot(), make([]string, 0))
+	projectHash, _ := dirhash.HashDir(utils.ProjectRoot(), dirhash.DefaultIgnoredPaths())
 	c.ProjectHash = projectHash
 	p := utils.ProjectRoot()
 	filename := p + string(os.PathSeparator) + CacheFilename

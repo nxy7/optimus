@@ -7,7 +7,7 @@ import (
 )
 
 func TestDirHash(t *testing.T) {
-	s, err := HashDir(utils.ProjectRoot(), make([]string, 0))
+	s, err := HashDir(utils.ProjectRoot(), DefaultIgnoredPaths())
 	if err != nil {
 		t.Error(err)
 	}

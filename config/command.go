@@ -18,7 +18,7 @@ type Cmd struct {
 	// Parent service can be empty in case of top level commands
 	ParentService       *Service
 	Path                string
-	DirHash             string
+	DirHash             []byte
 	Cache               bool
 	DidRun              bool
 	DidExitSuccessfully bool
@@ -41,6 +41,20 @@ func (c Cmd) ToCmdCache() cache.CommandCache {
 		RanSuccessfully: c.DidExitSuccessfully,
 		Hash:            c.DirHash,
 	}
+}
+
+func (c Cmd) GetCmdCache(ca *cache.Cache) *cache.CommandCache {
+	for _, cc := range ca.Commands {
+		parentName := ""
+		if c.ParentService != nil {
+			parentName = c.ParentService.Name
+		}
+		if cc.Name == c.Name && cc.ParentService == parentName {
+			return cc
+		}
+	}
+
+	return nil
 }
 
 func (c Cmd) MarshalJSON() ([]byte, error) {
@@ -73,10 +87,10 @@ func ParseCmd(name string, root string, parentService *Service, a any) Cmd {
 		File:          "",
 		Shell:         "bash -c",
 	}
-	if parentService != nil && parentService.DirHash != "" {
+	if parentService != nil && parentService.DirHash != nil {
 		command.DirHash = parentService.DirHash
 	} else {
-		dh, err := dirhash.HashDir(root, make([]string, 0))
+		dh, err := dirhash.HashDir(root, dirhash.DefaultIgnoredPaths())
 		if err != nil {
 			panic(err)
 		} else {

@@ -22,13 +22,13 @@ type Service struct {
 	Commands map[string]*Cmd
 
 	// Hash of whole directory
-	DirHash string
+	DirHash []byte
 }
 
 func (s *Service) UpdateDirhash() {
 	path := strings.Replace(s.Root, "./", "/", 1)
 	path = utils.ProjectRoot() + path
-	hash, err := dirhash.HashDir(path, make([]string, 0))
+	hash, err := dirhash.HashDir(path, dirhash.DefaultIgnoredPaths())
 	if err != nil {
 		panic(err)
 	}
@@ -53,6 +53,8 @@ func ParseService(name string, a any, configPath string) Service {
 		rootVal := r.(string)
 		rootVal = strings.Replace(rootVal, "./", "", 1)
 		s.Root = configPath + string(os.PathSeparator) + rootVal
+		dirHash, _ := dirhash.HashDir(s.Root, dirhash.DefaultIgnoredPaths())
+		s.DirHash = dirHash
 	}
 
 	for k, v := range amap {

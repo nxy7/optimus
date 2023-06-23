@@ -2,8 +2,8 @@ package dirhash
 
 import (
 	"bufio"
-	"crypto"
 	"crypto/md5"
+	"crypto/sha1"
 	"io"
 	"io/fs"
 	"log"
@@ -11,10 +11,14 @@ import (
 	"sort"
 )
 
-func HashDir(path string, ignore []string) (string, error) {
+func DefaultIgnoredPaths() []string {
+	return []string{"node_modules", "optimus.cache"}
+}
+
+func HashDir(path string, ignore []string) ([]byte, error) {
 	files, err := os.ReadDir(path)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
 	if _, err := os.Stat(path + "/.gitignore"); !os.IsNotExist(err) {
@@ -41,7 +45,7 @@ func HashDir(path string, ignore []string) (string, error) {
 		return files[i].Name() > files[j].Name()
 	})
 
-	hashArray := make([]string, 0)
+	hashArray := make([][]byte, 0)
 
 	for _, de := range files {
 		p := path + string(os.PathSeparator) + de.Name()
@@ -62,7 +66,7 @@ func HashDir(path string, ignore []string) (string, error) {
 		}
 	}
 
-	hash := crypto.SHA256.New()
+	hash := sha1.New()
 	hash.Write([]byte(path))
 	for _, v := range hashArray {
 		_, err := hash.Write([]byte(v))
@@ -70,26 +74,26 @@ func HashDir(path string, ignore []string) (string, error) {
 			panic(err)
 		}
 	}
-	res := string(hash.Sum(nil))
+	res := hash.Sum(nil)
 
 	// return it
 
 	return res, nil
 }
 
-func HashFile(path string) (string, error) {
+func HashFile(path string) ([]byte, error) {
 	file, err := os.Open(path)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 	defer file.Close()
 
 	hash := md5.New()
 	_, err = io.Copy(hash, file)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
-	sum := string(hash.Sum(nil))
+	sum := hash.Sum(nil)
 
 	return sum, nil
 }
