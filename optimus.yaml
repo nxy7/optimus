@@ -21,17 +21,10 @@ e2e_tests:
   # file: ./e2e_tests.nu
 
 services:
-  frontend:
-    root: ./config
-    dev:
-      shell: nu -c
-      run: |
-        ls
+  optimus:
+    root: .
     test: |
-      echo "testing"
-      # false
-    build: |
-      ls
+      go test ./...
 
 lscmd:
   root: ./config

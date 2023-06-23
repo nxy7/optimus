@@ -97,13 +97,19 @@ func ParseCmd(name string, root string, a any) Cmd {
 }
 
 func (c *Cmd) ToCobraCommand() cobra.Command {
-	return cobra.Command{
+	cobraCmd := cobra.Command{
 		Use:   c.Name,
 		Short: c.Description,
 		Run: func(cmd *cobra.Command, args []string) {
 			if c.CommandFunc == nil {
 				c.CommandFunc = c.GenerateCommandFunc()
 			}
+
+			force := cmd.Flag("force").Value.String() == "true"
+			if !force {
+				// check checksum from lockfile and if it's the same as now then skip test
+			}
+
 			err := c.CommandFunc()
 			if err != nil {
 				fmt.Println("Command failed")
@@ -112,6 +118,8 @@ func (c *Cmd) ToCobraCommand() cobra.Command {
 			}
 		},
 	}
+	cobraCmd.Flags().BoolP("force", "f", false, "usage string")
+	return cobraCmd
 }
 
 func (c *Cmd) GenerateCommandFunc() func() error {

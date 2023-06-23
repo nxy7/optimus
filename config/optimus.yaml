@@ -7,6 +7,7 @@ services:
         echo 2
     test: |
       echo "also testing"
+      false
   
 another_command: |
   echo "Just some other command"

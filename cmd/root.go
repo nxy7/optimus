@@ -16,7 +16,7 @@ var AppConfig config.Config
 var rootCmd = &cobra.Command{
 	Use:   "optimus",
 	Short: "Opinionated monorepo management framework",
-	Long:  `Optimus is opinionated but extensible monorepo framework that can work with most web app workflows: standalone services, docker-compose projects and kubernetes clusters. It's easy to extend optimus to do most monorepo tasks using your favourite shell language.`,
+	Long:  `Optimus is extensible monorepo framework that can work with most web app workflows: standalone services, docker-compose projects and kubernetes clusters. It's easy to extend optimus to do most monorepo tasks using your favourite shell language. Optimus supports caching of command results, so if your project didn't change then we won't rerun the command (unless you want to).`,
 }
 
 func Execute() {

@@ -16,5 +16,5 @@ func TestLoadConfig(t *testing.T) {
 }
 
 func TestConfigCanBeMarchaled(t *testing.T) {
-
+	// t.Fail()
 }

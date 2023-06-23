@@ -1,6 +1,11 @@
 package config
 
 import (
+	"optimus/dirhash"
+	"optimus/utils"
+
+	"strings"
+
 	"github.com/spf13/cobra"
 )
 
@@ -18,6 +23,16 @@ type Service struct {
 	AdditionalCommands map[string]*Cmd
 	Test               *Cmd
 	DirHash            string
+}
+
+func (s *Service) UpdateDirhash() {
+	path := strings.Replace(s.Root, "./", "/", 1)
+	path = utils.ProjectRoot() + path
+	hash, err := dirhash.HashDir(path, make([]string, 0))
+	if err != nil {
+		panic(err)
+	}
+	s.DirHash = hash
 }
 
 func ParseService(name string, a any) Service {

@@ -5,9 +5,12 @@ package cmd
 
 import (
 	"fmt"
+	"log"
+	"os"
 	"sync"
 
 	"github.com/spf13/cobra"
+	// "google.golang.org/appengine/log"
 )
 
 // testCmd represents the test command
@@ -47,7 +50,9 @@ to quickly create a Cobra application.`,
 			for _, err := range errors {
 				fmt.Println(err)
 			}
-			panic("Not all tests passed")
+
+			log.Print("Not all tests passed, exiting with code 1")
+			os.Exit(1)
 		}
 	},
 }

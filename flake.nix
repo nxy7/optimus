@@ -25,7 +25,7 @@
 
           src = ./.;
 
-          vendorHash = "sha256-3tO/+Mnvl/wpS7Ro3XDIVrlYTGVM680mcC15/7ON6qM=";
+          vendorHash = "sha256-qWB4wz4JfxEh4LiixD5JK8/mmF/kmEKwTLh4mqEdDbA=";
           # vendorHash = pkgs.lib.fakeHash;
 
           meta = with pkgs.lib; {
