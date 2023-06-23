@@ -8,7 +8,7 @@ Monorepo management tool that's extensible and will fit any workflow.
 - Doesn't use obscure languages for configuration. ☑
 - Extensible using any shell that's available on the system. ☑
 - Discoverable: allows newcomers to easily find out all parts of the system they can interact with. ☑
-- Smart testing makes CI pipelines faster. ☒
+- Smart testing makes CI pipelines faster. ☑
 - Post command hooks allow you to run script after specific command. ☒
 - Integrates with other tools like telepresence. ☑
 - Works with Docker Compose, Kubernetes and standalone apps. ☑
@@ -178,3 +178,7 @@ The easiest way to install this software would be using output of the flake from
 # Why 'Optimus'
 
 For some reason I thought that if You compared microservices to transformers, then tool managing them should be called by the name of transformers leader. The name sounds familiar, is easy to remember and easy to alias ('op'). 
+
+# TODO
+- clean up codebase
+- make init command that would create optimus files based on project structure (detect package.json, cargo.toml etc.)
