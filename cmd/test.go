@@ -36,6 +36,9 @@ var testCmd = &cobra.Command{
 		var wg sync.WaitGroup
 		for _, s := range services {
 			sTestCmd := s.Commands["test"]
+			if sTestCmd == nil {
+				continue
+			}
 			cachedRes := sTestCmd.GetCmdCache(ca)
 			if cachedRes != nil {
 				if string(sTestCmd.DirHash) == string(cachedRes.Hash) {
