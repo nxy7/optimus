@@ -32,6 +32,7 @@ func HashDir(path string, ignore []string) ([]byte, error) {
 		for _, v := range ignore {
 			if deName == v {
 				isIgnored = true
+				break
 			}
 		}
 
@@ -39,15 +40,14 @@ func HashDir(path string, ignore []string) ([]byte, error) {
 			filtered = append(filtered, de)
 		}
 	}
-	files = filtered
 
-	sort.SliceStable(files, func(i, j int) bool {
-		return files[i].Name() > files[j].Name()
+	sort.SliceStable(filtered, func(i, j int) bool {
+		return filtered[i].Name() > filtered[j].Name()
 	})
 
 	hashArray := make([][]byte, 0)
 
-	for _, de := range files {
+	for _, de := range filtered {
 		p := path + string(os.PathSeparator) + de.Name()
 		if de.IsDir() {
 			newIgnore := make([]string, 0)
@@ -75,8 +75,6 @@ func HashDir(path string, ignore []string) ([]byte, error) {
 		}
 	}
 	res := hash.Sum(nil)
-
-	// return it
 
 	return res, nil
 }
