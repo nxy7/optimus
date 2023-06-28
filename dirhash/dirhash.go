@@ -49,7 +49,7 @@ func HashDir(path string, ignore []string) ([]byte, error) {
 
 	for _, de := range filtered {
 		p := path + string(os.PathSeparator) + de.Name()
-		if de.IsDir() {
+		if de.IsDir() && de.Type().IsDir() {
 			newIgnore := make([]string, 0)
 			copy(newIgnore, ignore)
 			hash, err := HashDir(p, newIgnore)
