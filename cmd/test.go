@@ -7,7 +7,9 @@ import (
 	"fmt"
 	"log"
 	"optimus/cache"
+	"optimus/config"
 	"os"
+	"strings"
 
 	"sync"
 
@@ -27,49 +29,10 @@ var testCmd = &cobra.Command{
 		ca, err := cache.LoadCache()
 		if err != nil {
 			panic(err)
-		} else if ca == nil {
-			panic("cache empty?")
 		}
 
 		services := AppConfig.Services
-		errors := make([]error, 0)
-		var wg sync.WaitGroup
-		for _, s := range services {
-			sTestCmd := s.Commands["test"]
-			if sTestCmd == nil {
-				continue
-			}
-			cachedRes := sTestCmd.GetCmdCache(ca)
-			if cachedRes != nil {
-				if string(sTestCmd.DirHash) == string(cachedRes.Hash) {
-					fmt.Printf("Command %v is in cache\n", sTestCmd.ParentService.Name)
-					continue
-					// fmt.Printf("Cmd:\n%+v\nCached:\n%+v\n", sTestCmd, cachedRes)
-				} else {
-					fmt.Printf("\nDifferent dirhash for %v\nCmd: %v\nCache: %v\n\n", sTestCmd.ParentService.Name, sTestCmd.DirHash, cachedRes.Hash)
-				}
-
-			}
-			if sTestCmd != nil && s != nil {
-				wg.Add(1)
-
-				testCmd := sTestCmd.CommandFunc
-				if testCmd == nil {
-					testCmd = sTestCmd.GenerateCommandFunc()
-				}
-				go func() {
-					err := testCmd()
-					if err != nil {
-						errors = append(errors, err)
-					}
-					cached := sTestCmd.ToCmdCache()
-					cached.UpdateCache(ca)
-					wg.Done()
-				}()
-
-			}
-		}
-		wg.Wait()
+		errors := RunServiceTestCommands(services)
 
 		err = ca.SaveCache()
 		if err != nil {
@@ -86,6 +49,100 @@ var testCmd = &cobra.Command{
 			log.Println("All tests passed")
 		}
 	},
+}
+
+func RunServiceTestCommands(services map[string]*config.Service) []error {
+	ca, err := cache.LoadCache()
+	if err != nil {
+		panic(err)
+	}
+	errors := make([]error, 0)
+	var wg sync.WaitGroup
+	for _, s := range services {
+		sTestCmd := s.Commands["test"]
+		if sTestCmd == nil {
+			continue
+		}
+		cachedRes := sTestCmd.GetCmdCache(ca)
+		if cachedRes != nil {
+			if string(sTestCmd.DirHash) == string(cachedRes.Hash) {
+				fmt.Printf("Command %v is in cache\n", sTestCmd.ParentService.Name)
+				continue
+				// fmt.Printf("Cmd:\n%+v\nCached:\n%+v\n", sTestCmd, cachedRes)
+			} else {
+				fmt.Printf("\nDifferent dirhash for %v\nCmd: %v\nCache: %v\n\n", sTestCmd.ParentService.Name, sTestCmd.DirHash, cachedRes.Hash)
+			}
+
+		}
+		if sTestCmd != nil && s != nil {
+			wg.Add(1)
+
+			testCmd := sTestCmd.CommandFunc
+			if testCmd == nil {
+				testCmd = sTestCmd.GenerateCommandFunc()
+			}
+			go func() {
+				err := testCmd()
+				if err != nil {
+					errors = append(errors, err)
+				}
+				cached := sTestCmd.ToCmdCache()
+				cached.UpdateCache(ca)
+				wg.Done()
+			}()
+
+		}
+	}
+	wg.Wait()
+	return errors
+}
+
+func RunRootLevelTestCommands(config config.Config) []error {
+	ca, err := cache.LoadCache()
+	if err != nil {
+		panic(err)
+	}
+	errors := make([]error, 0)
+	var wg sync.WaitGroup
+	for _, cmd := range config.AdditionalCommands {
+		isTestCmd := strings.Contains(cmd.Name, "test")
+		if !isTestCmd {
+			continue
+		}
+
+		cachedRes := cmd.GetCmdCache(ca)
+		if cachedRes != nil {
+			if string(cmd.DirHash) == string(cachedRes.Hash) {
+				fmt.Printf("Command %v is in cache\n", cmd.ParentService.Name)
+				continue
+				// fmt.Printf("Cmd:\n%+v\nCached:\n%+v\n", sTestCmd, cachedRes)
+			} else {
+				fmt.Printf("\nDifferent dirhash for %v\nCmd: %v\nCache: %v\n\n", cmd.ParentService.Name, cmd.DirHash, cachedRes.Hash)
+			}
+
+		}
+
+		if cmd != nil {
+			wg.Add(1)
+
+			testCmd := cmd.CommandFunc
+			if testCmd == nil {
+				testCmd = cmd.GenerateCommandFunc()
+			}
+			go func() {
+				err := testCmd()
+				if err != nil {
+					errors = append(errors, err)
+				}
+				// cached := cmd.ToCmdCache()
+				// cached.UpdateCache(ca)
+				wg.Done()
+			}()
+
+		}
+	}
+	wg.Wait()
+	return errors
 }
 
 func init() {
