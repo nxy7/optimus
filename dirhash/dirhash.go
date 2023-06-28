@@ -12,7 +12,7 @@ import (
 )
 
 func DefaultIgnoredPaths() []string {
-	return []string{"node_modules", "optimus.cache", "target", ".git", ".direnv"}
+	return []string{"node_modules", "optimus.cache", "target", ".git", ".direnv", "README.md"}
 }
 
 func HashDir(path string, ignore []string) ([]byte, error) {

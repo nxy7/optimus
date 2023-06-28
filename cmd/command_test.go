@@ -10,7 +10,7 @@ import (
 func TestCommandCanBeMarchaled(t *testing.T) {
 	c := &config.Cmd{
 		Run:         "",
-		Path:        "",
+		Root:        "",
 		Name:        "",
 		Description: "",
 		File:        "",

@@ -40,5 +40,4 @@ func init() {
 		rootCmd.AddCommand(&svcCmd)
 	}
 
-	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }

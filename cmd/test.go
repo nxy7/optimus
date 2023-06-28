@@ -27,8 +27,8 @@ var testCmd = &cobra.Command{
 		ca, err := cache.LoadCache()
 		if err != nil {
 			panic(err)
-		} else {
-			// fmt.Printf("ca: %v\n", ca)
+		} else if ca == nil {
+			panic("cache empty?")
 		}
 
 		services := AppConfig.Services
@@ -68,12 +68,6 @@ var testCmd = &cobra.Command{
 		}
 		wg.Wait()
 
-		// for _, c := range AppConfig.FinishedCommands() {
-		// 	cc := c.ToCmdCache()
-		// 	cc.UpdateCache(ca)
-		// }
-
-		// fmt.Println(ca)
 		err = ca.SaveCache()
 		if err != nil {
 			log.Fatal(err)
@@ -93,5 +87,7 @@ var testCmd = &cobra.Command{
 
 func init() {
 	testCmd.Flags().BoolP("ignore-cache", "i", false, "Run all tests without using cached results")
+	testCmd.Flags().BoolP("only-services", "s", false, "Only run tests for services")
+	testCmd.Flags().StringP("filter", "f", "", "Phrase that tests should be filtered by")
 	rootCmd.AddCommand(testCmd)
 }

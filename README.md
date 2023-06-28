@@ -182,3 +182,4 @@ For some reason I thought that if You compared microservices to transformers, th
 # TODO
 - clean up codebase
 - make init command that would create optimus files based on project structure (detect package.json, cargo.toml etc.)
+- allow using env variables or .env file

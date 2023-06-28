@@ -74,8 +74,8 @@ func LoadCache() (*Cache, error) {
 	if err != nil {
 		return nil, err
 	}
-	AppCache = &cache
 
+	AppCache = &cache
 	return &cache, nil
 }
 

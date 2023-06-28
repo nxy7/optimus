@@ -18,7 +18,10 @@ type Service struct {
 	// Language           string
 
 	// Path that holds microservice
-	Root     string
+	Root string
+	// If specified CacheRoot is used to cache result of command
+	CacheRoot string
+
 	Commands map[string]*Cmd
 
 	// Hash of whole directory
@@ -36,7 +39,6 @@ func (s *Service) UpdateDirhash() {
 }
 
 func ParseService(name string, a any, configPath string) Service {
-	// fmt.Println("Parsing service")
 	s := Service{
 		Name:     name,
 		Root:     configPath + string(os.PathSeparator) + name,
@@ -84,6 +86,8 @@ func (s *Service) ToCobraCommand() cobra.Command {
 		cobraCmd := c.ToCobraCommand()
 		svcCmd.AddCommand(&cobraCmd)
 	}
+
+	// if service has more than 2 commands with word 'test' we could add custom command 'all_tests' to run all of them
 
 	return svcCmd
 }

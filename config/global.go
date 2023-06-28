@@ -2,6 +2,7 @@ package config
 
 type Global struct {
 	ShellCmd string
+	// Variables map[string]string
 }
 
 func ParseGlobal(a any) Global {

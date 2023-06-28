@@ -16,8 +16,12 @@ import (
 type Cmd struct {
 	Run string
 	// Parent service can be empty in case of top level commands
-	ParentService       *Service
-	Path                string
+	ParentService *Service
+	// Root of the services used to run commands from
+	Root string
+	// If specified CacheRoot is used to cache result of command
+	CacheRoot string
+
 	DirHash             []byte
 	Cache               bool
 	DidRun              bool
@@ -68,7 +72,7 @@ func (c Cmd) MarshalJSON() ([]byte, error) {
 		CommandFunc string
 	}{
 		Run:         c.Run,
-		Path:        c.Path,
+		Path:        c.Root,
 		Name:        c.Name,
 		Description: c.Description,
 		File:        c.File,
@@ -81,7 +85,7 @@ func ParseCmd(name string, root string, parentService *Service, a any) Cmd {
 	command := Cmd{
 		Run:           "",
 		Name:          name,
-		Path:          root,
+		Root:          root,
 		ParentService: parentService,
 		Description:   "",
 		File:          "",
@@ -104,7 +108,7 @@ func ParseCmd(name string, root string, parentService *Service, a any) Cmd {
 	}
 
 	obj, ok := a.(map[string]any)
-	legalFields := map[string]struct{}{"run": {}, "description": {}, "shell": {}, "file": {}, "root": {}, "cache": {}}
+	legalFields := map[string]struct{}{"run": {}, "description": {}, "shell": {}, "file": {}, "root": {}, "cache": {}, "cacheRoot": {}}
 	if !ok {
 		panic("Invalid Cmd shape")
 	}
@@ -125,9 +129,11 @@ func ParseCmd(name string, root string, parentService *Service, a any) Cmd {
 		} else if k == "file" {
 			command.File = vStr
 		} else if k == "root" {
-			command.Path = vStr
+			command.Root = vStr
 		} else if k == "cache" {
 			command.Cache = vStr == "true"
+		} else if k == "cacheRoot" {
+			command.CacheRoot = vStr
 		}
 	}
 
@@ -169,7 +175,7 @@ func (c *Cmd) ToCobraCommand() cobra.Command {
 func (c *Cmd) GenerateCommandFunc() func() error {
 	return func() error {
 		e := exec.Command("bash", "-c", c.Run)
-		e.Dir = c.Path
+		e.Dir = c.Root
 		e.Stdout = os.Stdout
 		e.Stderr = os.Stderr
 		e.Stdin = os.Stdin
