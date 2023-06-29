@@ -69,6 +69,9 @@ func ParseService(name string, a any, configPath string) Service {
 		} else if k == "test" {
 			c := ParseCmd(k, s.Root, &s, v)
 			s.Commands["test"] = &c
+		} else if k == "push" {
+			c := ParseCmd(k, s.Root, &s, v)
+			s.Commands["push"] = &c
 		}
 	}
 
