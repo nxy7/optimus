@@ -40,10 +40,10 @@ var buildCmd = &cobra.Command{
 				fmt.Println(err)
 			}
 
-			log.Println("Not all tests passed, exiting with code 1")
+			log.Println("Not all builds exited succesfully")
 			os.Exit(1)
 		} else {
-			log.Println("All tests passed")
+			log.Println("All builds were successful")
 		}
 	},
 }
