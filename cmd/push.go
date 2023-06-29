@@ -1,11 +1,13 @@
 /*
 Copyright © 2023 NAME HERE <EMAIL ADDRESS>
-
 */
 package cmd
 
 import (
 	"fmt"
+	"log"
+	"optimus/cache"
+	"os"
 
 	"github.com/spf13/cobra"
 )
@@ -21,7 +23,32 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("push called")
+		if len(args) > 1 {
+			panic("test command only accepts up to 1 argument")
+		}
+
+		ca, err := cache.LoadCache()
+		if err != nil {
+			panic(err)
+		}
+
+		services := AppConfig.Services
+		errors := RunServicesCommand(services, "push")
+
+		err = ca.SaveCache()
+		if err != nil {
+			log.Fatal(err)
+		}
+		if len(errors) > 0 {
+			for _, err := range errors {
+				fmt.Println(err)
+			}
+
+			log.Println("Not all tests passed, exiting with code 1")
+			os.Exit(1)
+		} else {
+			log.Println("All tests passed")
+		}
 	},
 }
 
