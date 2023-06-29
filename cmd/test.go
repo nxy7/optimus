@@ -65,7 +65,7 @@ func RunServiceTestCommands(services map[string]*config.Service) []error {
 		}
 		cachedRes := sTestCmd.GetCmdCache(ca)
 		if cachedRes != nil {
-			if string(sTestCmd.DirHash) == string(cachedRes.Hash) {
+			if string(sTestCmd.DirHash) == string(cachedRes.Hash) && cachedRes.RanSuccessfully {
 				fmt.Printf("Command %v is in cache\n", sTestCmd.ParentService.Name)
 				continue
 				// fmt.Printf("Cmd:\n%+v\nCached:\n%+v\n", sTestCmd, cachedRes)
@@ -112,7 +112,7 @@ func RunRootLevelTestCommands(config config.Config) []error {
 
 		cachedRes := cmd.GetCmdCache(ca)
 		if cachedRes != nil {
-			if string(cmd.DirHash) == string(cachedRes.Hash) {
+			if string(cmd.DirHash) == string(cachedRes.Hash) && cachedRes.RanSuccessfully {
 				fmt.Printf("Command %v is in cache\n", cmd.ParentService.Name)
 				continue
 				// fmt.Printf("Cmd:\n%+v\nCached:\n%+v\n", sTestCmd, cachedRes)
