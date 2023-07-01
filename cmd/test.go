@@ -32,7 +32,7 @@ var testCmd = &cobra.Command{
 		}
 
 		services := AppConfig.Services
-		errors := RunServiceTestCommands(services)
+		errors := RunServicesCommand(services, "test")
 
 		err = ca.SaveCache()
 		if err != nil {

@@ -61,7 +61,7 @@ func RunServicesCommand(services map[string]*config.Service, commandName string)
 			continue
 		}
 		cachedRes := sCommand.GetCmdCache(ca)
-		if cachedRes != nil {
+		if cachedRes != nil && sCommand.Cache {
 			if string(sCommand.DirHash) == string(cachedRes.Hash) && cachedRes.RanSuccessfully {
 				fmt.Printf("Command %v is in cache\n", sCommand.ParentService.Name)
 				continue
