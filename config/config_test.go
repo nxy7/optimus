@@ -18,3 +18,7 @@ func TestLoadConfig(t *testing.T) {
 func TestConfigCanBeMarchaled(t *testing.T) {
 	// t.Fail()
 }
+
+func TestConfigsCanBeMergedCorrectly(t *testing.T) {
+	// t.Fail()
+}

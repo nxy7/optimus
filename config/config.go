@@ -35,10 +35,26 @@ type E2eTests struct {
 	Cmd string
 }
 
+var globalConfig *Config
+
+func GetConfig() Config {
+	if globalConfig == nil {
+		return LoadConfig()
+	} else {
+		return *globalConfig
+	}
+}
+
+func SetConfig(config Config) {
+	globalConfig = &config
+}
+
 func LoadConfig() Config {
 	p := utils.ProjectRoot()
 
-	conf := LoadConfigFromPath(p)
+	conf := ReadConfigFromPath(p)
+
+	// Merge with default config to override defaults
 	conf.MergeConfigs(DefaultConfig())
 
 	return conf
@@ -50,8 +66,8 @@ func ParseConfig(a map[string]any, confPath string) Config {
 		AdditionalCommands: make(map[string]*Cmd),
 	}
 	include := make([]string, 0)
-	for k, v2 := range a {
-		if k == "include" {
+	for key, v2 := range a {
+		if key == "include" {
 			strv2, o := v2.([]any)
 			if !o {
 				panic("Wrong include format")
@@ -65,13 +81,13 @@ func ParseConfig(a map[string]any, confPath string) Config {
 				includePath = strings.Replace(includePath, "./", "/", 1)
 				include = append(include, includePath)
 			}
-		} else if k == "global" {
+		} else if key == "global" {
 			g := ParseGlobal(v2)
 			conf.Global = &g
-		} else if k == "e2e_tests" {
-			c := ParseCmd(k, confPath, nil, v2)
+		} else if key == "e2e_tests" {
+			c := ParseCmd(key, confPath, nil, v2)
 			conf.E2eTests = &c
-		} else if k == "services" {
+		} else if key == "services" {
 			servicesAny, o := v2.(map[string]any)
 			if !o {
 				panic("Unexpected services format")
@@ -81,20 +97,20 @@ func ParseConfig(a map[string]any, confPath string) Config {
 				conf.Services[svcName] = &s
 			}
 		} else {
-			cmd := ParseCmd(k, confPath, nil, v2)
-			conf.AdditionalCommands[k] = &cmd
+			cmd := ParseCmd(key, confPath, nil, v2)
+			conf.AdditionalCommands[key] = &cmd
 		}
 
 	}
 
 	for _, v2 := range include {
-		c2 := LoadConfigFromPath(confPath + v2)
+		c2 := ReadConfigFromPath(confPath + v2)
 		conf.MergeConfigs(c2)
 	}
 	return conf
 }
 
-func LoadConfigFromPath(p string) Config {
+func ReadConfigFromPath(p string) Config {
 	v := viper.New()
 	v.SetConfigType("yaml")
 	v.SetConfigName("optimus")

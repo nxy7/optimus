@@ -27,7 +27,7 @@ func Execute() {
 }
 
 func init() {
-	AppConfig = config.LoadConfig()
+	AppConfig = config.GetConfig()
 
 	for _, command := range AppConfig.AdditionalCommands {
 		cobraCmd := command.ToCobraCommand()

@@ -23,7 +23,3 @@ var printConfigCmd = &cobra.Command{
 		fmt.Printf("%+v", string(jsonified))
 	},
 }
-
-func init() {
-	rootCmd.AddCommand(printConfigCmd)
-}

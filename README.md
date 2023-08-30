@@ -1,3 +1,6 @@
+# This repository is no longer continued
+This was a fun experiment, but while using Optimus in my projects I've quickly found out that while it's nice for shells like bash and zsh it doesn't offer anything over scripts written using nushell (my shell of choice). Nushell itself offers good discoveribility and is even more flexible, so there's no point in continuing this repo.
+
 ![Optimus Prime](https://www.dexerto.com/cdn-cgi/image/width=3840,quality=75,format=auto/https://editors.dexerto.com/wp-content/uploads/2023/04/21/Transformers-1.jpg)
 
 Monorepo management tool that's extensible and will fit any workflow.
